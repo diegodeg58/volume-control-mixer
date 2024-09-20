@@ -130,14 +130,14 @@
     <ClInclude Include="CAudioEndpointVolumeCallback.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="Project1.h" />
+    <ClInclude Include="Main.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CAudioEndpointVolumeCallback.cpp" />
     <ClCompile Include="MainWindow.cpp" />
-    <ClCompile Include="Project1.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project1.rc" />
