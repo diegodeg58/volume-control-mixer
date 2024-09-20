@@ -63,101 +63,23 @@ LRESULT CALLBACK MainWindow::sAbout(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	return false;
 }
 
-LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message) {
-
-	case WM_COMMAND:
+LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) {
+	switch (id)
 	{
-		int wmId = LOWORD(wParam);
-		// Parse the menu selections:
-		switch (wmId)
-		{
-		case IDM_ABOUT:
-			DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, sAbout, (LPARAM)this);
-			break;
-		case IDM_EXIT:
-			DestroyWindow(hWnd);
-			break;
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
-		}
-	}
-	break;
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code that uses hdc here...
-		EndPaint(hWnd, &ps);
-	}
-	break;
-	case WM_SIZE: {
-		RECT rect;
-		GetWindowRect(hWnd, &rect);
+	case IDM_ABOUT:
+		DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, sAbout, (LPARAM)this);
 		break;
-	}
-	case WM_CREATE: {
-		CreateSliders();
+	case IDM_EXIT:
+		DestroyWindow(hWnd);
 		break;
-	}
-	case WM_VSCROLL: {
-		if (LOWORD(wParam) == TB_THUMBPOSITION || LOWORD(wParam) == TB_THUMBTRACK) {
-			int value = (int)MAX_VOL - HIWORD(wParam);
-			char text[5];
-			sprintf_s(text, "%d", value);
-
-			char textControl[20];
-			for (unsigned int i = 0; i < countDevices; i++) {
-				if (fader[i] == (HWND)lParam) {
-					sprintf_s(textControl, "%d", i);
-					float newValue = (float)(value) / MAX_VOL;
-					iEndpointVolume[i]->SetMasterVolumeLevelScalar(newValue, NULL);
-					SetWindowTextA(textFader[i], (LPCSTR)text);
-				}
-			}
-		}
-		break;
-	}
-	case WM_DESTROY: {
-		CoUninitialize();
-		for (unsigned int i = 0; i < countDevices; i++) {
-			iEndpointVolume[i]->UnregisterControlChangeNotify(ppCAudioEndpointVolumeCallback[i]);
-		}
-		delete[] fader;
-		delete[] textFader;
-		delete[] iEndpointVolume;
-		delete[] iEndpointDevice;
-		delete[] ppCAudioEndpointVolumeCallback;
-		PostQuitMessage(0);
-		break;
-	}
 	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		FORWARD_WM_COMMAND(hWnd, id, hwndCtl, codeNotify, DefWindowProc);
+		return false;
 	}
-	return 0;
 }
 
-INT_PTR MainWindow::About(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 {
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-		{
-			EndDialog(hWnd, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
-}
-
-BOOL MainWindow::CreateSliders() {
 	HRESULT hr;
 	hr = CoInitialize(NULL);
 	IMMDeviceEnumerator* deviceEnumerator = NULL;
@@ -227,4 +149,85 @@ BOOL MainWindow::CreateSliders() {
 	MoveWindow(hWnd, (int)rect.left, (int)rect.top, x, y, true);
 
 	return TRUE;
+}
+
+void MainWindow::OnDestroy(HWND hwnd)
+{
+	CoUninitialize();
+	for (unsigned int i = 0; i < countDevices; i++) {
+		iEndpointVolume[i]->UnregisterControlChangeNotify(ppCAudioEndpointVolumeCallback[i]);
+	}
+	delete[] fader;
+	delete[] textFader;
+	delete[] iEndpointVolume;
+	delete[] iEndpointDevice;
+	delete[] ppCAudioEndpointVolumeCallback;
+	PostQuitMessage(0);
+}
+
+void MainWindow::OnPaint(HWND hwnd) const
+{
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(hWnd, &ps);
+	// TODO: Add any drawing code that uses hdc here...
+	EndPaint(hWnd, &ps);
+}
+
+void MainWindow::OnSize(HWND hwnd, UINT state, int cx, int cy) const
+{
+	RECT rect;
+	GetWindowRect(hWnd, &rect);
+}
+
+void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
+{
+	if (code == TB_THUMBPOSITION || code == TB_THUMBTRACK) {
+		int value = (int)MAX_VOL - pos;
+		char text[5];
+		sprintf_s(text, "%d", value);
+
+		char textControl[20];
+		for (unsigned int i = 0; i < countDevices; i++) {
+			if (fader[i] == hwndCtl) {
+				sprintf_s(textControl, "%d", i);
+				float newValue = (float)(value) / MAX_VOL;
+				iEndpointVolume[i]->SetMasterVolumeLevelScalar(newValue, NULL);
+				SetWindowTextA(textFader[i], (LPCSTR)text);
+			}
+		}
+	}
+}
+
+LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message) {
+		HANDLE_MSG(hWnd, WM_COMMAND, OnCommand);
+		HANDLE_MSG(hWnd, WM_CREATE, OnCreate);
+		HANDLE_MSG(hWnd, WM_DESTROY, OnDestroy);
+		HANDLE_MSG(hWnd, WM_PAINT, OnPaint);
+		HANDLE_MSG(hWnd, WM_SIZE, OnSize);
+		HANDLE_MSG(hWnd, WM_VSCROLL, OnVScroll);
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+}
+
+INT_PTR MainWindow::About(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hWnd, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }
