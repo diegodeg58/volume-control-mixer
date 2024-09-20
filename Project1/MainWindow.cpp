@@ -181,19 +181,23 @@ void MainWindow::OnSize(HWND hwnd, UINT state, int cx, int cy) const
 
 void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 {
+	int value;
 	if (code == TB_THUMBPOSITION || code == TB_THUMBTRACK) {
-		int value = (int)MAX_VOL - pos;
-		char text[5];
-		sprintf_s(text, "%d", value);
+		value = (int)MAX_VOL - pos;
+	}
+	else {
+		value = (int)MAX_VOL - SendMessage(hwndCtl, TBM_GETPOS, NULL, NULL);
+	}
+	char text[5];
+	sprintf_s(text, "%d", value);
 
-		char textControl[20];
-		for (unsigned int i = 0; i < countDevices; i++) {
-			if (fader[i] == hwndCtl) {
-				sprintf_s(textControl, "%d", i);
-				float newValue = (float)(value) / MAX_VOL;
-				iEndpointVolume[i]->SetMasterVolumeLevelScalar(newValue, NULL);
-				SetWindowTextA(textFader[i], (LPCSTR)text);
-			}
+	char textControl[20];
+	for (unsigned int i = 0; i < countDevices; i++) {
+		if (fader[i] == hwndCtl) {
+			sprintf_s(textControl, "%d", i);
+			float newValue = (float)(value) / MAX_VOL;
+			iEndpointVolume[i]->SetMasterVolumeLevelScalar(newValue, NULL);
+			SetWindowTextA(textFader[i], (LPCSTR)text);
 		}
 	}
 }
