@@ -4,7 +4,7 @@ MainWindow::MainWindow(HINSTANCE hInstance) {
 	hInst = hInstance;
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_PROJECT1, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hInstance);
+	MyRegisterClass();
 }
 
 HWND MainWindow::CreateMainWindow() {
@@ -13,7 +13,7 @@ HWND MainWindow::CreateMainWindow() {
 		((int)0x80000000), 0, nullptr, nullptr, hInst, this);
 }
 
-ATOM MainWindow::MyRegisterClass(HINSTANCE hInstance) const
+ATOM MainWindow::MyRegisterClass() const
 {
 	WNDCLASSEXW wcex{};
 
@@ -22,13 +22,13 @@ ATOM MainWindow::MyRegisterClass(HINSTANCE hInstance) const
 	wcex.lpfnWndProc = sWndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_PROJECT1));
+	wcex.hInstance = hInst;
+	wcex.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_PROJECT1));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_MENU + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_PROJECT1);
 	wcex.lpszClassName = szWindowClass;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.hIconSm = LoadIcon(hInst, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
 }
@@ -84,43 +84,45 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	hr = CoInitialize(NULL);
 	IMMDeviceEnumerator* deviceEnumerator = NULL;
 	hr = CoCreateInstance(
-		__uuidof(MMDeviceEnumerator),
-		NULL,
-		CLSCTX_INPROC_SERVER,
-		__uuidof(IMMDeviceEnumerator),
-		(LPVOID*)&deviceEnumerator);
+		__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER,
+		__uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
 
-	IMMDeviceCollection* deviceCollection = NULL;
-	hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &deviceCollection);
+	IMMDeviceCollection* deviceOutCollection = NULL;
+	IMMDeviceCollection* deviceInCollection = NULL;
+	hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &deviceOutCollection);
+	hr = deviceEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &deviceInCollection);
 
 	deviceEnumerator->Release();
 	deviceEnumerator = NULL;
 
-	hr = deviceCollection->GetCount(&countDevices);
-	fader = new HWND[countDevices];
-	textFader = new HWND[countDevices];
-	iEndpointDevice = new IMMDevice * [countDevices];
-	iEndpointVolume = new IAudioEndpointVolume * [countDevices];
-	ppCAudioEndpointVolumeCallback = new CAudioEndpointVolumeCallback * [countDevices];
+	hr = deviceOutCollection->GetCount(&countOutDevices);
+	hr = deviceInCollection->GetCount(&countInDevices);
+
+	fader = new HWND[countOutDevices];
+	textFader = new HWND[countOutDevices];
+	iEndpointDevice = new IMMDevice * [countOutDevices];
+	iEndpointVolume = new IAudioEndpointVolume * [countOutDevices];
+	ppCAudioEndpointVolumeCallback = new CAudioEndpointVolumeCallback * [countOutDevices];
 
 	int x, y = 480;
 
-	for (ULONG i = 0; i < countDevices; i++) {
+	for (ULONG i = 0; i < countOutDevices; i++) {
 		fader[i] = CreateWindowEx(
 			0, TRACKBAR_CLASS, NULL,
 			WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_VERT | TBS_BOTH,
-			10 + i * 150, 10, 50, 300, hWnd, NULL, hInst, NULL);
+			35 + i * 150, 10, 50, 300, hWnd, NULL, hInst, NULL);
 		textFader[i] = CreateWindowEx(
 			0, L"Static",
 			NULL, WS_CHILD | WS_VISIBLE,
-			25 + i * 150, 310, 50, 30, hWnd, NULL, hInst, NULL);
+			45 + i * 150, 310, 50, 30, hWnd, NULL, hInst, NULL);
 		HWND hTextDevice = CreateWindowEx(
 			0, L"Static", NULL,
 			WS_CHILD | WS_VISIBLE,
 			25 + i * 150, 340, 100, 100, hWnd, NULL, hInst, NULL);
 
-		hr = deviceCollection->Item(i, &iEndpointDevice[i]);
-		hr = iEndpointDevice[i]->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&iEndpointVolume[i]);
+		hr = deviceOutCollection->Item(i, &iEndpointDevice[i]);
+		hr = iEndpointDevice[i]->Activate(
+			__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&iEndpointVolume[i]);
 
 		ppCAudioEndpointVolumeCallback[i] = new CAudioEndpointVolumeCallback(fader[i], textFader[i]);
 		hr = iEndpointVolume[i]->RegisterControlChangeNotify(ppCAudioEndpointVolumeCallback[i]);
@@ -154,7 +156,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 void MainWindow::OnDestroy(HWND hwnd)
 {
 	CoUninitialize();
-	for (unsigned int i = 0; i < countDevices; i++) {
+	for (unsigned int i = 0; i < countOutDevices; i++) {
 		iEndpointVolume[i]->UnregisterControlChangeNotify(ppCAudioEndpointVolumeCallback[i]);
 	}
 	delete[] fader;
@@ -192,7 +194,7 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 	sprintf_s(text, "%d", value);
 
 	char textControl[20];
-	for (unsigned int i = 0; i < countDevices; i++) {
+	for (unsigned int i = 0; i < countOutDevices; i++) {
 		if (fader[i] == hwndCtl) {
 			sprintf_s(textControl, "%d", i);
 			float newValue = (float)(value) / MAX_VOL;

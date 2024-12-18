@@ -22,9 +22,10 @@ private:
 	IMMDevice** iEndpointDevice;
 	IAudioEndpointVolume** iEndpointVolume;
 	CAudioEndpointVolumeCallback** ppCAudioEndpointVolumeCallback;
-	UINT countDevices = NULL;
+	UINT countOutDevices = NULL;
+	UINT countInDevices = NULL;
 
-	ATOM MyRegisterClass(HINSTANCE hInstance) const;
+	ATOM MyRegisterClass() const;
 
 	static LRESULT CALLBACK sWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK sAbout(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
