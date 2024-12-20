@@ -1,9 +1,10 @@
 #include "MainWindow.h"
+#include "About.h"
 
 MainWindow::MainWindow(HINSTANCE hInstance) {
 	hInst = hInstance;
-	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDC_PROJECT1, szWindowClass, MAX_LOADSTRING);
+	LoadStringW(hInst, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInst, IDC_PROJECT1, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass();
 }
 
@@ -49,25 +50,11 @@ LRESULT CALLBACK MainWindow::sWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	return false;
 }
 
-LRESULT CALLBACK MainWindow::sAbout(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	MainWindow* pMainWindow;
-	if (message == WM_INITDIALOG) {
-		pMainWindow = reinterpret_cast<MainWindow*>(lParam);
-		SetWindowLongPtrW(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pMainWindow));
-	}
-	else {
-		pMainWindow = reinterpret_cast<MainWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-	}
-	if (pMainWindow)
-		return pMainWindow->About(hWnd, message, wParam, lParam);
-	return false;
-}
-
 LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) {
 	switch (id)
 	{
 	case IDM_ABOUT:
-		DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, sAbout, (LPARAM)this);
+		AboutWnd::GetInstance(hWnd, hInst)->Show();
 		break;
 	case IDM_EXIT:
 		DestroyWindow(hWnd);
@@ -217,23 +204,4 @@ LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-}
-
-INT_PTR MainWindow::About(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-		{
-			EndDialog(hWnd, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
 }

@@ -10,7 +10,7 @@
 #include "CAudioEndpointVolumeCallback.h"
 #include "MainWindow.h"
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, MainWindow* mainWindow);
+BOOL InitInstance(int nCmdShow, MainWindow* mainWindow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -28,7 +28,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	InitCommonControlsEx(&iCCE);
 
 	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow, &mainWindow))
+	if (!InitInstance(nCmdShow, &mainWindow))
 	{
 		return FALSE;
 	}
@@ -50,7 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return (int)msg.wParam;
 }
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, MainWindow* mainWindow)
+BOOL InitInstance(int nCmdShow, MainWindow* mainWindow)
 {
 	HWND hWnd = mainWindow->CreateMainWindow();
 

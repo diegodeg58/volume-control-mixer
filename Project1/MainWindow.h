@@ -28,9 +28,7 @@ private:
 	ATOM MyRegisterClass() const;
 
 	static LRESULT CALLBACK sWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK sAbout(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
-	INT_PTR About(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	//Listeners
 	LRESULT OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify);
