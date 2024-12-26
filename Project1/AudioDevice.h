@@ -1,6 +1,9 @@
 #pragma once
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
+#include <CommCtrl.h>
+#include "CAudioEndpointVolumeCallback.h"
+
 class AudioDevice
 {
 protected:
@@ -14,6 +17,6 @@ protected:
 
 public:
 	AudioDevice(HWND hParent, HINSTANCE hInst, int x, int y);
-	HWND GetHandler();
+	void Activate(UINT nDevice, IMMDeviceCollection* deviceOutCollection);
 };
 

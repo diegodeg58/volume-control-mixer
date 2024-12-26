@@ -1,5 +1,4 @@
 #include "AudioDevice.h"
-#include <CommCtrl.h>
 
 AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int x, int y)
 {
@@ -15,5 +14,14 @@ AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int x, int y)
 		0, L"Static", NULL,
 		WS_CHILD | WS_VISIBLE,
 		x, y + 330, 100, 100, hParent, NULL, hInst, NULL);
-	// HRESULT hr = 
+}
+
+void AudioDevice::Activate(UINT nDevice, IMMDeviceCollection *deviceOutCollection)
+{
+	HRESULT hr = deviceOutCollection->Item(nDevice, &iEndpoint);
+	hr = iEndpoint->Activate(
+		__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
+		NULL, (LPVOID*)&endpointVolume);
+	hr = endpointVolume->RegisterControlChangeNotify(
+		pCAudioEndpointVolumeCallback = new CAudioEndpointVolumeCallback(hFader, hValue));
 }

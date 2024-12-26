@@ -13,7 +13,7 @@ private:
     INT_PTR Procedure(UINT message, WPARAM wParam, LPARAM lParam);
 
     LRESULT OnInitdialog(HWND hWnd, HWND wParam, LPARAM lParam);
-    LRESULT OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify);
+    LRESULT OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const;
     AboutWnd(HWND hParent, HINSTANCE hInst);
 
 public:

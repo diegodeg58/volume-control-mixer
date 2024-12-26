@@ -50,7 +50,7 @@ LRESULT CALLBACK MainWindow::sWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	return false;
 }
 
-LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) {
+LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const {
 	switch (id)
 	{
 	case IDM_ABOUT:
@@ -63,6 +63,7 @@ LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) 
 		FORWARD_WM_COMMAND(hWnd, id, hwndCtl, codeNotify, DefWindowProc);
 		return false;
 	}
+	return true;
 }
 
 BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
@@ -175,7 +176,7 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 		value = (int)MAX_VOL - pos;
 	}
 	else {
-		value = (int)MAX_VOL - SendMessage(hwndCtl, TBM_GETPOS, NULL, NULL);
+		value = MAX_VOL - (int)SendMessage(hwndCtl, TBM_GETPOS, NULL, NULL);
 	}
 	char text[5];
 	sprintf_s(text, "%d", value);

@@ -33,7 +33,7 @@ LRESULT AboutWnd::OnInitdialog(HWND hWnd, HWND wParam, LPARAM lParam)
     return (INT_PTR)TRUE;
 }
 
-LRESULT AboutWnd::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+LRESULT AboutWnd::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const
 {
     switch (id)
     {
@@ -49,6 +49,7 @@ AboutWnd::AboutWnd(HWND hParent, HINSTANCE hInst)
 {
     this->hParent = hParent;
     this->hInst = hInst;
+    this->hWnd = NULL;
 }
 
 AboutWnd *AboutWnd::GetInstance(const HWND hParent, const HINSTANCE hInst)

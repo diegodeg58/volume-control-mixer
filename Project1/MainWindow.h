@@ -31,7 +31,7 @@ private:
 	LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 	//Listeners
-	LRESULT OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify);
+	LRESULT OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const;
 	BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);
 	void OnDestroy(HWND hwnd);
 	void OnPaint(HWND hwnd) const;
