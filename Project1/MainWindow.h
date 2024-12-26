@@ -6,6 +6,7 @@
 #include <endpointvolume.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include "CAudioEndpointVolumeCallback.h"
+#include "AudioDevice.h"
 #include "windowsx.h"
 constexpr auto MAX_LOADSTRING = 100;
 
@@ -17,13 +18,9 @@ private:
 	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 	HWND hWnd;
 
-	HWND* fader;
-	HWND* textFader;
-	IMMDevice** iEndpointDevice;
-	IAudioEndpointVolume** iEndpointVolume;
-	CAudioEndpointVolumeCallback** ppCAudioEndpointVolumeCallback;
-	UINT countOutDevices = NULL;
-	UINT countInDevices = NULL;
+	AudioDevice** audioOutDevices;
+	UINT countOutDevices;
+	UINT countInDevices;
 
 	ATOM MyRegisterClass() const;
 
@@ -33,7 +30,7 @@ private:
 	//Listeners
 	LRESULT OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const;
 	BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);
-	void OnDestroy(HWND hwnd);
+	void OnDestroy(HWND hwnd) const;
 	void OnPaint(HWND hwnd) const;
 	void OnSize(HWND hwnd, UINT state, int cx, int cy) const;
 	void OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos);

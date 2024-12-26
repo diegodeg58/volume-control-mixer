@@ -1,27 +1,64 @@
 #include "AudioDevice.h"
 
-AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int x, int y)
+AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
+	: iAudioEndpointVolumeCallback(levelFader, levelValue)
 {
-	hFader = CreateWindowEx(
+	levelFader = CreateWindowEx(
 		0, TRACKBAR_CLASS, NULL,
-		WS_CHILD | WS_TABSTOP | TBS_VERT | TBS_BOTH,
-		x + 10, y, 50, 300, hParent, NULL, hInst, NULL);
-	hValue = CreateWindowEx(
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_VERT | TBS_BOTH,
+		xCoord + 10, yCoord, 50, 300, hParent, NULL, hInst, NULL);
+	levelValue = CreateWindowEx(
 		0, L"Static",
 		NULL, WS_CHILD | WS_VISIBLE,
-		x + 20, y + 300, 50, 30, hParent, NULL, hInst, NULL);
-	hName = CreateWindowEx(
+		xCoord + 20, yCoord + 300, 50, 30, hParent, NULL, hInst, NULL);
+	deviceName = CreateWindowEx(
 		0, L"Static", NULL,
 		WS_CHILD | WS_VISIBLE,
-		x, y + 330, 100, 100, hParent, NULL, hInst, NULL);
+		xCoord, yCoord + 330, 100, 100, hParent, NULL, hInst, NULL);
+	iEndpoint = NULL;
+	iEndpointVolume = NULL;
 }
 
-void AudioDevice::Activate(UINT nDevice, IMMDeviceCollection *deviceOutCollection)
+void AudioDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollection)
 {
-	HRESULT hr = deviceOutCollection->Item(nDevice, &iEndpoint);
-	hr = iEndpoint->Activate(
-		__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
-		NULL, (LPVOID*)&endpointVolume);
-	hr = endpointVolume->RegisterControlChangeNotify(
-		pCAudioEndpointVolumeCallback = new CAudioEndpointVolumeCallback(hFader, hValue));
+	float currentVolumeScalar;
+	char text[4], textDevice[100];
+	IPropertyStore *pPropertyStore = NULL;
+	PROPVARIANT varName;
+
+	deviceOutCollection->Item(nDevice, &iEndpoint);
+	iEndpoint->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
+							 NULL, (LPVOID *)&iEndpointVolume);
+	iEndpointVolume->RegisterControlChangeNotify(&iAudioEndpointVolumeCallback);
+	iEndpointVolume->GetMasterVolumeLevelScalar(&currentVolumeScalar);
+	sprintf_s(text, "%d", (int)(currentVolumeScalar * MAX_VOL));
+	SendMessageA(levelFader, TBM_SETPOS, TRUE, LPARAM((int)MAX_VOL - (currentVolumeScalar * MAX_VOL)));
+	SetWindowTextA(levelValue, (LPCSTR)text);
+
+	iEndpoint->OpenPropertyStore(STGM_READ, &pPropertyStore);
+	PropVariantInit(&varName);
+	pPropertyStore->GetValue(PKEY_Device_FriendlyName, &varName);
+	sprintf_s(textDevice, "%S", varName.pwszVal);
+	SetWindowTextA(deviceName, (LPCSTR)textDevice);
+}
+
+void AudioDevice::SetVolumeScalar(float volume)
+{
+	char text[4];
+	iEndpointVolume->SetMasterVolumeLevelScalar(volume, NULL);
+	sprintf_s(text, "%d", (int)(volume * MAX_VOL));
+	SendMessageA(levelFader, TBM_SETPOS, TRUE, LPARAM((int)MAX_VOL - (volume * MAX_VOL)));
+	SetWindowTextA(levelValue, (LPCSTR)text);
+}
+
+HWND AudioDevice::GetLevelFader() const
+{
+    return levelFader;
+}
+
+AudioDevice::~AudioDevice()
+{
+	iEndpointVolume->UnregisterControlChangeNotify(&iAudioEndpointVolumeCallback);
+	iEndpointVolume->Release();
+	iEndpoint->Release();
 }

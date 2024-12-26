@@ -2,21 +2,24 @@
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
 #include <CommCtrl.h>
+#include <functiondiscoverykeys_devpkey.h>
 #include "CAudioEndpointVolumeCallback.h"
 
 class AudioDevice
 {
 protected:
-	HWND hFader;
-	HWND hValue;
-	HWND hName;
+	HWND levelFader;
+	HWND levelValue;
+	HWND deviceName;
 	IMMDevice* iEndpoint;
-	IAudioEndpointVolume* endpointVolume;
-	IAudioEndpointVolumeCallback* pCAudioEndpointVolumeCallback;
-	unsigned int x, y;
+	IAudioEndpointVolume* iEndpointVolume;
+	CAudioEndpointVolumeCallback iAudioEndpointVolumeCallback;
 
 public:
-	AudioDevice(HWND hParent, HINSTANCE hInst, int x, int y);
-	void Activate(UINT nDevice, IMMDeviceCollection* deviceOutCollection);
+	AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord);
+	void SetDevice(UINT nDevice, IMMDeviceCollection* deviceOutCollection);
+	void SetVolumeScalar(float volume);
+	HWND GetLevelFader() const;
+	~AudioDevice();
 };
 

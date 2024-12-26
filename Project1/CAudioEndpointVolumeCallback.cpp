@@ -7,7 +7,7 @@ CAudioEndpointVolumeCallback::CAudioEndpointVolumeCallback(HWND hWndFader, HWND 
 
 CAudioEndpointVolumeCallback::~CAudioEndpointVolumeCallback()
 {
-	delete this;
+	// delete this;
 }
 
 // IUnknown methods -- AddRef, Release, and QueryInterface
