@@ -130,6 +130,7 @@
     <ClInclude Include="About.h" />
     <ClInclude Include="AudioDevice.h" />
     <ClInclude Include="CAudioEndpointVolumeCallback.h" />
+    <ClInclude Include="CBaseDialog.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Main.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="About.cpp" />
     <ClCompile Include="AudioDevice.cpp" />
     <ClCompile Include="CAudioEndpointVolumeCallback.cpp" />
+    <ClCompile Include="CBaseDialog.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
