@@ -5,6 +5,7 @@ class CBaseDialog
 {
 public:
     // static CBaseDialog *GetInstance(const HWND hParent, const HINSTANCE hInst);
+    CBaseDialog() = default;
     CBaseDialog(CBaseDialog &other) = delete;
     void operator=(const CBaseDialog &) = delete;
 

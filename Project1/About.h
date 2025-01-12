@@ -2,14 +2,13 @@
 #include "resource.h"
 #include "framework.h"
 #include "windowsx.h"
-class AboutWnd
+#include "CBaseDialog.h"
+class AboutWnd : public CBaseDialog
 {
 private:
-    HWND hWnd, hParent;
     HINSTANCE hInst;
     static AboutWnd* instance;
 
-    static LRESULT CALLBACK sProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
     INT_PTR Procedure(UINT message, WPARAM wParam, LPARAM lParam);
 
     LRESULT OnInitdialog(HWND hWnd, HWND wParam, LPARAM lParam);
