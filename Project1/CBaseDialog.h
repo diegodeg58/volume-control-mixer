@@ -11,13 +11,21 @@ public:
 
 protected:
     HWND hWnd, hParent;
-    // HINSTANCE hInst;
+    HINSTANCE hInst;
     // static CBaseDialog* instance;
 
     static LRESULT CALLBACK sProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    virtual LRESULT CALLBACK Procedure(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
+    virtual INT_PTR CALLBACK Procedure(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
+    virtual void Show() = 0;
+
+private:
     inline static CBaseDialog *GetObjectFromWindow(HWND hWnd)
     {
         return reinterpret_cast<CBaseDialog *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    }
+
+    inline static void SetObjectToWindow(HWND hWnd, CBaseDialog *pWnd)
+    {
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
     }
 };

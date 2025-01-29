@@ -26,32 +26,3 @@ LRESULT AboutWnd::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) co
     }
     return (INT_PTR)FALSE;
 }
-
-AboutWnd::AboutWnd(HWND hParent, HINSTANCE hInst)
-{
-    this->hParent = hParent;
-    this->hInst = hInst;
-    this->hWnd = NULL;
-}
-
-AboutWnd *AboutWnd::GetInstance(const HWND hParent, const HINSTANCE hInst)
-{
-    if (!instance)
-    {
-        instance = new AboutWnd(hParent, hInst);
-    }
-    return instance;
-}
-
-void AboutWnd::Show()
-{
-    DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hParent, sProcedure, (LPARAM)this);
-}
-
-AboutWnd::~AboutWnd()
-{
-    delete instance;
-    instance = nullptr;
-}
-
-AboutWnd* AboutWnd::instance = nullptr;

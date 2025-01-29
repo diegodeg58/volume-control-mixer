@@ -7,7 +7,7 @@ LRESULT CALLBACK CBaseDialog::sProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LP
     {
         pWnd = reinterpret_cast<CBaseDialog *>(lParam);
         pWnd->hWnd = hwnd;
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
+        SetObjectToWindow(hwnd, pWnd);
     }
     pWnd = GetObjectFromWindow(hwnd);
 
