@@ -1,35 +1,41 @@
 #include "CDialogSingleton.h"
 #include "resource.h"
 
-CDialogSingleton *CDialogSingleton::instance = nullptr;
+template <class T>
+T *CDialogSingleton<T>::instance = nullptr;
 
-CDialogSingleton::CDialogSingleton(HWND hParent, HINSTANCE hInst)
+template <class T>
+CDialogSingleton<T>::CDialogSingleton(HWND hParent, HINSTANCE hInst)
 {
     this->hParent = hParent;
     this->hInst = hInst;
     this->hWnd = NULL;
 }
 
-INT_PTR CDialogSingleton::Procedure(UINT uMsg, WPARAM wParam, LPARAM lParam)
+template <class T>
+INT_PTR CDialogSingleton<T>::Procedure(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     return (INT_PTR)FALSE;
 }
 
-CDialogSingleton *CDialogSingleton::GetInstance(const HWND hParent, const HINSTANCE hInst)
+template <class T>
+CDialogSingleton<T> *CDialogSingleton<T>::GetInstance(const HWND hParent, const HINSTANCE hInst)
 {
     if (!instance)
     {
-        instance = new CDialogSingleton(hParent, hInst);
+        instance = new T(hParent, hInst);
     }
     return instance;
 }
 
-void CDialogSingleton::Show()
+template <class T>
+void CDialogSingleton<T>::Show()
 {
     DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hParent, sProcedure, (LPARAM)this);
 }
 
-CDialogSingleton::~CDialogSingleton()
+template <class T>
+CDialogSingleton<T>::~CDialogSingleton()
 {
     delete instance;
     instance = nullptr;

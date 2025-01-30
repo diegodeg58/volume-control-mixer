@@ -1,7 +1,9 @@
 #pragma once
 #include "CDialogSingleton.h"
-class AboutWnd : public CDialogSingleton
+class AboutWnd : public CDialogSingleton<AboutWnd>
 {
+public:
+
 private:
     INT_PTR Procedure(UINT message, WPARAM wParam, LPARAM lParam) override;
 

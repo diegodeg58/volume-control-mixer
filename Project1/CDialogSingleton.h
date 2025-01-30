@@ -1,5 +1,6 @@
 #pragma once
 #include "CBaseDialog.h"
+template <class T>
 class CDialogSingleton : public CBaseDialog
 {
 public:
@@ -12,6 +13,6 @@ public:
 
 protected:
     CDialogSingleton(HWND hParent, HINSTANCE hInst);
-    static CDialogSingleton *instance;
+    static T *instance;
     virtual INT_PTR Procedure(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
