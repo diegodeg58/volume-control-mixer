@@ -1,13 +1,5 @@
 #pragma once
-#include "resource.h"
-#include "framework.h"
-#include <commctrl.h>
-#include <mmdeviceapi.h>
-#include <endpointvolume.h>
-#include <functiondiscoverykeys_devpkey.h>
-#include "CAudioEndpointVolumeCallback.h"
 #include "AudioDevice.h"
-#include "windowsx.h"
 constexpr auto MAX_LOADSTRING = 100;
 
 class MainWindow {

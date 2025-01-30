@@ -1,4 +1,10 @@
 #include "CBaseDialog.h"
+#include "resource.h"
+
+void CBaseDialog::Show()
+{
+    DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hParent, sProcedure, (LPARAM)this);
+}
 
 LRESULT CALLBACK CBaseDialog::sProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

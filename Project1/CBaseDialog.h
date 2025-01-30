@@ -1,24 +1,24 @@
 #pragma once
 #include "framework.h"
-#include "windowsx.h"
 class CBaseDialog
 {
 public:
-    // static CBaseDialog *GetInstance(const HWND hParent, const HINSTANCE hInst);
-    CBaseDialog() = default;
-    CBaseDialog(CBaseDialog &other) = delete;
-    void operator=(const CBaseDialog &) = delete;
+    CBaseDialog(HWND hParent, HINSTANCE hInst) : hParent(hParent), hInst(hInst), hWnd(NULL) {};
+    virtual void Show();
 
 protected:
-    HWND hWnd, hParent;
-    HINSTANCE hInst;
-    // static CBaseDialog* instance;
+    HWND hWnd;
+    const HWND hParent;
+    const HINSTANCE hInst;
 
     static LRESULT CALLBACK sProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     virtual INT_PTR CALLBACK Procedure(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
-    virtual void Show() = 0;
 
 private:
+    CBaseDialog() = delete;
+    CBaseDialog(CBaseDialog &other) = delete;
+    void operator=(const CBaseDialog &) = delete;
+
     inline static CBaseDialog *GetObjectFromWindow(HWND hWnd)
     {
         return reinterpret_cast<CBaseDialog *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));

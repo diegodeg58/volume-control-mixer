@@ -5,14 +5,12 @@ class CDialogSingleton : public CBaseDialog
 {
 public:
     static CDialogSingleton *GetInstance(const HWND hParent, const HINSTANCE hInst);
-    CDialogSingleton(CDialogSingleton &other) = delete;
-    void operator=(const CDialogSingleton &) = delete;
 
-    void Show();
     ~CDialogSingleton();
 
 protected:
-    CDialogSingleton(HWND hParent, HINSTANCE hInst);
+    CDialogSingleton(CDialogSingleton &other) = delete;
+    void operator=(const CDialogSingleton &) = delete;
+    CDialogSingleton(HWND hParent, HINSTANCE hInst) : CBaseDialog(hParent, hInst) {};
     static T *instance;
-    virtual INT_PTR Procedure(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };

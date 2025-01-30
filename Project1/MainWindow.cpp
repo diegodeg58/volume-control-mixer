@@ -1,5 +1,8 @@
 #include "MainWindow.h"
 #include "About.h"
+#include "resource.h"
+#include <commctrl.h>
+#include <windowsx.h>
 
 MainWindow::MainWindow(HINSTANCE hInstance) {
 	hInst = hInstance;
