@@ -13,7 +13,7 @@ protected:
 	HWND deviceName;
 	IMMDevice* iEndpoint;
 	IAudioEndpointVolume* iEndpointVolume;
-	CAudioEndpointVolumeCallback iAudioEndpointVolumeCallback;
+	CAudioEndpointVolumeCallback* iAudioEndpointVolumeCallback;
 
 public:
 	AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord);

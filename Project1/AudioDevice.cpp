@@ -1,7 +1,7 @@
 #include "AudioDevice.h"
 
 AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
-	: iAudioEndpointVolumeCallback(levelFader, levelValue)
+	// : iAudioEndpointVolumeCallback(levelFader, levelValue)
 {
 	levelFader = CreateWindowEx(
 		0, TRACKBAR_CLASS, NULL,
@@ -17,6 +17,8 @@ AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
 		xCoord, yCoord + 330, 100, 100, hParent, NULL, hInst, NULL);
 	iEndpoint = NULL;
 	iEndpointVolume = NULL;
+
+	iAudioEndpointVolumeCallback = new CAudioEndpointVolumeCallback(levelFader, levelValue);
 }
 
 void AudioDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollection)
@@ -25,19 +27,20 @@ void AudioDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollecti
 	char text[4], textDevice[100];
 	IPropertyStore *pPropertyStore = NULL;
 	PROPVARIANT varName;
+	HRESULT hr;
 
-	deviceOutCollection->Item(nDevice, &iEndpoint);
-	iEndpoint->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
+	hr = deviceOutCollection->Item(nDevice, &iEndpoint);
+	hr = iEndpoint->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
 							 NULL, (LPVOID *)&iEndpointVolume);
-	iEndpointVolume->RegisterControlChangeNotify(&iAudioEndpointVolumeCallback);
-	iEndpointVolume->GetMasterVolumeLevelScalar(&currentVolumeScalar);
+	hr = iEndpointVolume->RegisterControlChangeNotify(iAudioEndpointVolumeCallback);
+	hr = iEndpointVolume->GetMasterVolumeLevelScalar(&currentVolumeScalar);
 	sprintf_s(text, "%d", (int)(currentVolumeScalar * MAX_VOL));
 	SendMessageA(levelFader, TBM_SETPOS, TRUE, LPARAM((int)MAX_VOL - (currentVolumeScalar * MAX_VOL)));
 	SetWindowTextA(levelValue, (LPCSTR)text);
 
-	iEndpoint->OpenPropertyStore(STGM_READ, &pPropertyStore);
+	hr = iEndpoint->OpenPropertyStore(STGM_READ, &pPropertyStore);
 	PropVariantInit(&varName);
-	pPropertyStore->GetValue(PKEY_Device_FriendlyName, &varName);
+	hr = pPropertyStore->GetValue(PKEY_Device_FriendlyName, &varName);
 	sprintf_s(textDevice, "%S", varName.pwszVal);
 	SetWindowTextA(deviceName, (LPCSTR)textDevice);
 }
@@ -58,7 +61,8 @@ HWND AudioDevice::GetLevelFader() const
 
 AudioDevice::~AudioDevice()
 {
-	iEndpointVolume->UnregisterControlChangeNotify(&iAudioEndpointVolumeCallback);
+	iEndpointVolume->UnregisterControlChangeNotify(iAudioEndpointVolumeCallback);
 	iEndpointVolume->Release();
 	iEndpoint->Release();
+	delete iAudioEndpointVolumeCallback;
 }
