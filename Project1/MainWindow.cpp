@@ -95,8 +95,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	ULONG x = 10, y = 10;
 	audioOutDevices.reserve(countOutDevices);
 	for (ULONG i = 0; i < countOutDevices; i++, x = i * 120) {
-		AudioDevice audioDevice(hWnd, hInst, x, y);
-		audioOutDevices.push_back(audioDevice);
+		audioOutDevices.push_back(UIAudioOutDevice(hWnd, hInst, x, y));
 		audioOutDevices.back().SetDevice(i, deviceOutCollection);
 	}
 	RECT rect;

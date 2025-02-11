@@ -5,7 +5,7 @@
 #include <functiondiscoverykeys_devpkey.h>
 #include "CAudioEndpointVolumeCallback.h"
 
-class AudioDevice
+class UIAudioOutDevice
 {
 protected:
 	HWND levelFader;
@@ -16,7 +16,7 @@ protected:
 	CAudioEndpointVolumeCallback iAudioEndpointVolumeCallback;
 
 public:
-	AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord);
+	UIAudioOutDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord);
 	void SetDevice(UINT nDevice, IMMDeviceCollection* deviceOutCollection);
 	void SetVolumeScalar(float volume);
 	HWND GetLevelFader() const;

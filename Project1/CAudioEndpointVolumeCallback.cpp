@@ -1,7 +1,7 @@
 #include "CAudioEndpointVolumeCallback.h"
 
 CAudioEndpointVolumeCallback::CAudioEndpointVolumeCallback() :
-	_cRef(1)
+	_cRef(1), hWndFader(NULL), hWndTextFader(NULL)
 {
 };
 

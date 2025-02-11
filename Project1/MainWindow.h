@@ -11,8 +11,8 @@ private:
 	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 	HWND hWnd;
 
-	std::vector<AudioDevice> audioOutDevices;
-	// AudioDevice** audioOutDevices;
+	std::vector<UIAudioOutDevice> audioOutDevices;
+	// UIAudioOutDevice** audioOutDevices;
 	UINT countOutDevices;
 	UINT countInDevices;
 

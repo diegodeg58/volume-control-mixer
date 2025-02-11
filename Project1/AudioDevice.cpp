@@ -1,7 +1,6 @@
 #include "AudioDevice.h"
 
-AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
-	// : iAudioEndpointVolumeCallback(levelFader, levelValue)
+UIAudioOutDevice::UIAudioOutDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
 {
 	levelFader = CreateWindowEx(
 		0, TRACKBAR_CLASS, NULL,
@@ -20,9 +19,10 @@ AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
 
 	iAudioEndpointVolumeCallback = CAudioEndpointVolumeCallback();
 	iAudioEndpointVolumeCallback.SetHandlers(levelFader, levelValue);
+	iAudioEndpointVolumeCallback.AddRef();
 }
 
-void AudioDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollection)
+void UIAudioOutDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollection)
 {
 	float currentVolumeScalar;
 	char text[4], textDevice[100];
@@ -46,7 +46,7 @@ void AudioDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollecti
 	SetWindowTextA(deviceName, (LPCSTR)textDevice);
 }
 
-void AudioDevice::SetVolumeScalar(float volume)
+void UIAudioOutDevice::SetVolumeScalar(float volume)
 {
 	char text[4];
 	iEndpointVolume->SetMasterVolumeLevelScalar(volume, NULL);
@@ -55,14 +55,15 @@ void AudioDevice::SetVolumeScalar(float volume)
 	SetWindowTextA(levelValue, (LPCSTR)text);
 }
 
-HWND AudioDevice::GetLevelFader() const
+HWND UIAudioOutDevice::GetLevelFader() const
 {
     return levelFader;
 }
 
-void AudioDevice::Release()
+void UIAudioOutDevice::Release()
 {
 	iEndpointVolume->UnregisterControlChangeNotify(&iAudioEndpointVolumeCallback);
 	iEndpointVolume->Release();
 	iEndpoint->Release();
+	iAudioEndpointVolumeCallback.Release();
 }
