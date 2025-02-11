@@ -12,7 +12,6 @@ private:
 	HWND hWnd;
 
 	std::vector<UIAudioOutDevice> audioOutDevices;
-	// UIAudioOutDevice** audioOutDevices;
 	UINT countOutDevices;
 	UINT countInDevices;
 

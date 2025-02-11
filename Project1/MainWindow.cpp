@@ -4,6 +4,16 @@
 #include <commctrl.h>
 #include <windowsx.h>
 
+void CenterWindow(HWND hwnd) {
+	RECT rc;
+	GetWindowRect(hwnd, &rc);
+	int width = rc.right - rc.left;
+	int height = rc.bottom - rc.top;
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	SetWindowPos(hwnd, 0, (screenWidth - width) / 2, (screenHeight - height) / 2, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+}
+
 MainWindow::MainWindow(HINSTANCE hInstance) {
 	hInst = hInstance;
 	LoadStringW(hInst, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -100,7 +110,8 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	}
 	RECT rect;
 	GetWindowRect(hWnd, &rect);
-	MoveWindow(hWnd, (int)rect.left, (int)rect.top, x, 475, true);
+	MoveWindow(hWnd, (int)rect.left, (int)rect.top, x, 575, true);
+	CenterWindow(hWnd);
 
 	return TRUE;
 }
