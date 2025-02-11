@@ -13,12 +13,14 @@ constexpr auto MAX_VOL = 100;
 class CAudioEndpointVolumeCallback : public IAudioEndpointVolumeCallback
 {
     LONG _cRef;
-    const HWND hWndFader;
-    const HWND hWndTextFader;
+    HWND hWndFader;
+    HWND hWndTextFader;
 
 public:
-    CAudioEndpointVolumeCallback(HWND hWndFader, HWND hWndTextFader);
+    CAudioEndpointVolumeCallback();
     ~CAudioEndpointVolumeCallback();
+
+    void SetHandlers(HWND hWndFader, HWND hWndTextFader);
 
     // IUnknown methods -- AddRef, Release, and QueryInterface
     ULONG STDMETHODCALLTYPE AddRef();

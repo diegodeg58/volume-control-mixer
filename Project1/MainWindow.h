@@ -1,5 +1,6 @@
 #pragma once
 #include "AudioDevice.h"
+#include <vector>
 constexpr auto MAX_LOADSTRING = 100;
 
 class MainWindow {
@@ -10,7 +11,8 @@ private:
 	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 	HWND hWnd;
 
-	AudioDevice** audioOutDevices;
+	std::vector<AudioDevice> audioOutDevices;
+	// AudioDevice** audioOutDevices;
 	UINT countOutDevices;
 	UINT countInDevices;
 
@@ -22,7 +24,7 @@ private:
 	//Listeners
 	LRESULT OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const;
 	BOOL OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);
-	void OnDestroy(HWND hwnd) const;
+	void OnDestroy(HWND hwnd);
 	void OnPaint(HWND hwnd) const;
 	void OnSize(HWND hwnd, UINT state, int cx, int cy) const;
 	void OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos);

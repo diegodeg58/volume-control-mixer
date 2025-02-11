@@ -8,7 +8,7 @@ MainWindow::MainWindow(HINSTANCE hInstance) {
 	hInst = hInstance;
 	LoadStringW(hInst, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInst, IDC_PROJECT1, szWindowClass, MAX_LOADSTRING);
-	audioOutDevices = NULL;
+	audioOutDevices = {};
 	countOutDevices = 0;
 	countInDevices = 0;
 	MyRegisterClass();
@@ -93,10 +93,11 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	hr = deviceInCollection->GetCount(&countInDevices);
 
 	ULONG x = 10, y = 10;
-	audioOutDevices = new AudioDevice * [countOutDevices];
+	audioOutDevices.reserve(countOutDevices);
 	for (ULONG i = 0; i < countOutDevices; i++, x = i * 120) {
-		audioOutDevices[i] = new AudioDevice(hWnd, hInst, x, y);
-		audioOutDevices[i]->SetDevice(i, deviceOutCollection);
+		AudioDevice audioDevice(hWnd, hInst, x, y);
+		audioOutDevices.push_back(audioDevice);
+		audioOutDevices.back().SetDevice(i, deviceOutCollection);
 	}
 	RECT rect;
 	GetWindowRect(hWnd, &rect);
@@ -105,14 +106,13 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	return TRUE;
 }
 
-void MainWindow::OnDestroy(HWND hwnd) const
+void MainWindow::OnDestroy(HWND hwnd)
 {
 	CoUninitialize();
-	for (unsigned int i = 0; i < countOutDevices; i++)
-	{
-		delete audioOutDevices[i];
+	//release all devices
+	for (unsigned int i = 0; i < countOutDevices; i++) {
+		audioOutDevices[i].Release();
 	}
-	delete[] audioOutDevices;
 	PostQuitMessage(0);
 }
 
@@ -143,9 +143,9 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 	sprintf_s(text, "%d", value);
 
 	for (unsigned int i = 0; i < countOutDevices; i++) {
-		if (hwndCtl == audioOutDevices[i]->GetLevelFader()) {
+		if (hwndCtl == audioOutDevices[i].GetLevelFader()) {
 			float newValue = (float)(value) / MAX_VOL;
-			audioOutDevices[i]->SetVolumeScalar(newValue);
+			audioOutDevices[i].SetVolumeScalar(newValue);
 		}
 	}
 }

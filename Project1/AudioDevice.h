@@ -13,13 +13,13 @@ protected:
 	HWND deviceName;
 	IMMDevice* iEndpoint;
 	IAudioEndpointVolume* iEndpointVolume;
-	CAudioEndpointVolumeCallback* iAudioEndpointVolumeCallback;
+	CAudioEndpointVolumeCallback iAudioEndpointVolumeCallback;
 
 public:
 	AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord);
 	void SetDevice(UINT nDevice, IMMDeviceCollection* deviceOutCollection);
 	void SetVolumeScalar(float volume);
 	HWND GetLevelFader() const;
-	~AudioDevice();
+	void Release();
 };
 

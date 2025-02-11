@@ -1,13 +1,19 @@
 #include "CAudioEndpointVolumeCallback.h"
 
-CAudioEndpointVolumeCallback::CAudioEndpointVolumeCallback(HWND hWndFader, HWND hWndTextFader) :
-	_cRef(1), hWndFader(hWndFader), hWndTextFader(hWndTextFader)
+CAudioEndpointVolumeCallback::CAudioEndpointVolumeCallback() :
+	_cRef(1)
 {
 };
 
 CAudioEndpointVolumeCallback::~CAudioEndpointVolumeCallback()
 {
 	// delete this;
+}
+
+void CAudioEndpointVolumeCallback::SetHandlers(HWND hWndFader, HWND hWndTextFader)
+{
+	this->hWndFader = hWndFader;
+	this->hWndTextFader = hWndTextFader;
 }
 
 // IUnknown methods -- AddRef, Release, and QueryInterface

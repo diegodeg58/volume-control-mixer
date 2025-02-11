@@ -18,7 +18,8 @@ AudioDevice::AudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
 	iEndpoint = NULL;
 	iEndpointVolume = NULL;
 
-	iAudioEndpointVolumeCallback = new CAudioEndpointVolumeCallback(levelFader, levelValue);
+	iAudioEndpointVolumeCallback = CAudioEndpointVolumeCallback();
+	iAudioEndpointVolumeCallback.SetHandlers(levelFader, levelValue);
 }
 
 void AudioDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollection)
@@ -32,7 +33,7 @@ void AudioDevice::SetDevice(UINT nDevice, IMMDeviceCollection *deviceOutCollecti
 	hr = deviceOutCollection->Item(nDevice, &iEndpoint);
 	hr = iEndpoint->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
 							 NULL, (LPVOID *)&iEndpointVolume);
-	hr = iEndpointVolume->RegisterControlChangeNotify(iAudioEndpointVolumeCallback);
+	hr = iEndpointVolume->RegisterControlChangeNotify(&iAudioEndpointVolumeCallback);
 	hr = iEndpointVolume->GetMasterVolumeLevelScalar(&currentVolumeScalar);
 	sprintf_s(text, "%d", (int)(currentVolumeScalar * MAX_VOL));
 	SendMessageA(levelFader, TBM_SETPOS, TRUE, LPARAM((int)MAX_VOL - (currentVolumeScalar * MAX_VOL)));
@@ -59,10 +60,9 @@ HWND AudioDevice::GetLevelFader() const
     return levelFader;
 }
 
-AudioDevice::~AudioDevice()
+void AudioDevice::Release()
 {
-	iEndpointVolume->UnregisterControlChangeNotify(iAudioEndpointVolumeCallback);
+	iEndpointVolume->UnregisterControlChangeNotify(&iAudioEndpointVolumeCallback);
 	iEndpointVolume->Release();
 	iEndpoint->Release();
-	delete iAudioEndpointVolumeCallback;
 }
