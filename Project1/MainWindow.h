@@ -10,6 +10,7 @@ private:
 	WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 	HWND hWnd;
+	HWND hTabControl;
 
 	std::vector<UIAudioOutDevice> audioOutDevices;
 	UINT countOutDevices;

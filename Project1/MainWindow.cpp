@@ -3,8 +3,10 @@
 #include "resource.h"
 #include <commctrl.h>
 #include <windowsx.h>
+#include "Utilities.h"
 
-void CenterWindow(HWND hwnd) {
+void CenterWindow(HWND hwnd)
+{
 	RECT rc;
 	GetWindowRect(hwnd, &rc);
 	int width = rc.right - rc.left;
@@ -14,7 +16,8 @@ void CenterWindow(HWND hwnd) {
 	SetWindowPos(hwnd, 0, (screenWidth - width) / 2, (screenHeight - height) / 2, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 }
 
-MainWindow::MainWindow(HINSTANCE hInstance) {
+MainWindow::MainWindow(HINSTANCE hInstance)
+{
 	hInst = hInstance;
 	LoadStringW(hInst, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInst, IDC_PROJECT1, szWindowClass, MAX_LOADSTRING);
@@ -24,10 +27,11 @@ MainWindow::MainWindow(HINSTANCE hInstance) {
 	MyRegisterClass();
 }
 
-HWND MainWindow::CreateMainWindow() {
+HWND MainWindow::CreateMainWindow()
+{
 	return CreateWindowExW(0L, szWindowClass, szTitle,
-		WS_GROUP | WS_SYSMENU, ((int)0x80000000), 0,
-		((int)0x80000000), 0, nullptr, nullptr, hInst, this);
+						   WS_GROUP | WS_SYSMENU, ((int)0x80000000), 0,
+						   ((int)0x80000000), 0, nullptr, nullptr, hInst, this);
 }
 
 ATOM MainWindow::MyRegisterClass() const
@@ -50,23 +54,27 @@ ATOM MainWindow::MyRegisterClass() const
 	return RegisterClassExW(&wcex);
 }
 
-LRESULT CALLBACK MainWindow::sWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	MainWindow* pMainWindow;
-	if (message == WM_NCCREATE) {
+LRESULT CALLBACK MainWindow::sWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	MainWindow *pMainWindow;
+	if (message == WM_NCCREATE)
+	{
 		LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
-		pMainWindow = static_cast<MainWindow*>(lpcs->lpCreateParams);
+		pMainWindow = static_cast<MainWindow *>(lpcs->lpCreateParams);
 		pMainWindow->hWnd = hWnd;
 		SetWindowLongPtrW(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pMainWindow));
 	}
-	else {
-		pMainWindow = reinterpret_cast<MainWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	else
+	{
+		pMainWindow = reinterpret_cast<MainWindow *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 	}
 	if (pMainWindow)
 		return pMainWindow->WndProc(message, wParam, lParam);
 	return false;
 }
 
-LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const {
+LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) const
+{
 	switch (id)
 	{
 	case IDM_ABOUT:
@@ -86,13 +94,13 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 {
 	HRESULT hr;
 	hr = CoInitialize(NULL);
-	IMMDeviceEnumerator* deviceEnumerator = NULL;
+	IMMDeviceEnumerator *deviceEnumerator = NULL;
 	hr = CoCreateInstance(
 		__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER,
-		__uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
+		__uuidof(IMMDeviceEnumerator), (LPVOID *)&deviceEnumerator);
 
-	IMMDeviceCollection* deviceOutCollection = NULL;
-	IMMDeviceCollection* deviceInCollection = NULL;
+	IMMDeviceCollection *deviceOutCollection = NULL;
+	IMMDeviceCollection *deviceInCollection = NULL;
 	hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &deviceOutCollection);
 	hr = deviceEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &deviceInCollection);
 
@@ -102,16 +110,33 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	hr = deviceOutCollection->GetCount(&countOutDevices);
 	hr = deviceInCollection->GetCount(&countInDevices);
 
-	ULONG x = 10, y = 10;
+	ULONG x = 0, y = 40;
 	audioOutDevices.reserve(countOutDevices);
-	for (ULONG i = 0; i < countOutDevices; i++, x = i * 120) {
+	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
+	{
 		audioOutDevices.push_back(UIAudioOutDevice(hWnd, hInst, x, y));
 		audioOutDevices.back().SetDevice(i, deviceOutCollection);
 	}
-	RECT rect;
-	GetWindowRect(hWnd, &rect);
-	MoveWindow(hWnd, (int)rect.left, (int)rect.top, x, 575, true);
+	RECT rect{0, 0, x + 20, audioOutDevices.back().GetRect().bottom + 70};
+	MoveWindow(hWnd, rect.left, rect.top, rect.right, rect.bottom, true);
 	CenterWindow(hWnd);
+
+	RECT rcClient;
+	GetClientRect(hWnd, &rcClient);
+	hTabControl = CreateWindow(
+		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+		5,
+		5,
+		rcClient.right - 10,
+		audioOutDevices.back().GetRect().bottom,
+		hWnd, NULL, hInst, NULL);
+	TCITEM tie[2];
+	tie[0].mask = TCIF_TEXT;
+	tie[0].pszText = const_cast<LPWSTR>(L"Output");
+	TabCtrl_InsertItem(hTabControl, 0, &tie[0]);
+	tie[1].mask = TCIF_TEXT;
+	tie[1].pszText = const_cast<LPWSTR>(L"Input");
+	TabCtrl_InsertItem(hTabControl, 1, &tie[1]);
 
 	return TRUE;
 }
@@ -119,8 +144,9 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 void MainWindow::OnDestroy(HWND hwnd)
 {
 	CoUninitialize();
-	//release all devices
-	for (unsigned int i = 0; i < countOutDevices; i++) {
+	// release all devices
+	for (unsigned int i = 0; i < countOutDevices; i++)
+	{
 		audioOutDevices[i].Release();
 	}
 	PostQuitMessage(0);
@@ -143,17 +169,21 @@ void MainWindow::OnSize(HWND hwnd, UINT state, int cx, int cy) const
 void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 {
 	int value;
-	if (code == TB_THUMBPOSITION || code == TB_THUMBTRACK) {
+	if (code == TB_THUMBPOSITION || code == TB_THUMBTRACK)
+	{
 		value = (int)MAX_VOL - pos;
 	}
-	else {
+	else
+	{
 		value = MAX_VOL - (int)SendMessage(hwndCtl, TBM_GETPOS, NULL, NULL);
 	}
 	char text[5];
 	sprintf_s(text, "%d", value);
 
-	for (unsigned int i = 0; i < countOutDevices; i++) {
-		if (hwndCtl == audioOutDevices[i].GetLevelFader()) {
+	for (unsigned int i = 0; i < countOutDevices; i++)
+	{
+		if (hwndCtl == audioOutDevices[i].GetLevelFader())
+		{
 			float newValue = (float)(value) / MAX_VOL;
 			audioOutDevices[i].SetVolumeScalar(newValue);
 		}
@@ -162,7 +192,8 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 
 LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message) {
+	switch (message)
+	{
 		HANDLE_MSG(hWnd, WM_COMMAND, OnCommand);
 		HANDLE_MSG(hWnd, WM_CREATE, OnCreate);
 		HANDLE_MSG(hWnd, WM_DESTROY, OnDestroy);

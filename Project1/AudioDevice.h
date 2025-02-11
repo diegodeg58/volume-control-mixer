@@ -21,5 +21,6 @@ public:
 	void SetVolumeScalar(float volume);
 	HWND GetLevelFader() const;
 	void Release();
+	RECT GetRect() const;
 };
 

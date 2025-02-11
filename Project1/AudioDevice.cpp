@@ -1,19 +1,36 @@
 #include "AudioDevice.h"
+#include "Utilities.h"
+#define CTRL_WIDTH 100
+#define Y_OFFSET 40
 
 UIAudioOutDevice::UIAudioOutDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord)
 {
 	levelFader = CreateWindowEx(
 		0, TRACKBAR_CLASS, NULL,
 		WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_VERT | TBS_BOTH,
-		xCoord + 10, yCoord, 50, 300, hParent, NULL, hInst, NULL);
+		xCoord + 30,
+		yCoord,
+		CTRL_WIDTH - 60,
+		300,
+		hParent, NULL, hInst, NULL);
+
 	levelValue = CreateWindowEx(
 		0, L"Static",
-		NULL, WS_CHILD | WS_VISIBLE,
-		xCoord + 20, yCoord + 300, 50, 30, hParent, NULL, hInst, NULL);
+		NULL, WS_CHILD | WS_VISIBLE | SS_CENTER,
+		xCoord,
+		Utilities::GetLocalCoordinates(levelFader).bottom,
+		CTRL_WIDTH,
+		20,
+		hParent, NULL, hInst, NULL);
+
 	deviceName = CreateWindowEx(
 		0, L"Static", NULL,
-		WS_CHILD | WS_VISIBLE,
-		xCoord, yCoord + 330, 100, 100, hParent, NULL, hInst, NULL);
+		WS_CHILD | WS_VISIBLE | SS_CENTER,
+		xCoord,
+		Utilities::GetLocalCoordinates(levelValue).bottom,
+		CTRL_WIDTH,
+		50,
+		hParent, NULL, hInst, NULL);
 	iEndpoint = NULL;
 	iEndpointVolume = NULL;
 
@@ -57,7 +74,7 @@ void UIAudioOutDevice::SetVolumeScalar(float volume)
 
 HWND UIAudioOutDevice::GetLevelFader() const
 {
-    return levelFader;
+	return levelFader;
 }
 
 void UIAudioOutDevice::Release()
@@ -66,4 +83,13 @@ void UIAudioOutDevice::Release()
 	iEndpointVolume->Release();
 	iEndpoint->Release();
 	iAudioEndpointVolumeCallback.Release();
+}
+
+RECT UIAudioOutDevice::GetRect() const
+{
+	return RECT{
+		Utilities::GetLocalCoordinates(deviceName).left,
+		Utilities::GetLocalCoordinates(levelFader).top,
+		Utilities::GetLocalCoordinates(deviceName).right,
+		Utilities::GetLocalCoordinates(deviceName).bottom};
 }
