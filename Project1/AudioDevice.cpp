@@ -87,9 +87,10 @@ void UIAudioOutDevice::Release()
 
 RECT UIAudioOutDevice::GetRect() const
 {
+	RECT rect = Utilities::GetLocalCoordinates(deviceName);
 	return RECT{
-		Utilities::GetLocalCoordinates(deviceName).left,
-		Utilities::GetLocalCoordinates(levelFader).top,
-		Utilities::GetLocalCoordinates(deviceName).right,
-		Utilities::GetLocalCoordinates(deviceName).bottom};
+		0,
+		0,
+		rect.right,
+		rect.bottom};
 }

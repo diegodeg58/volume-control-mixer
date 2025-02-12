@@ -1,8 +1,8 @@
 #include "MainWindow.h"
 #include "About.h"
 #include "resource.h"
-#include <commctrl.h>
 #include <windowsx.h>
+#include <commctrl.h>
 #include "Utilities.h"
 
 void CenterWindow(HWND hwnd)
@@ -110,33 +110,39 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	hr = deviceOutCollection->GetCount(&countOutDevices);
 	hr = deviceInCollection->GetCount(&countInDevices);
 
-	ULONG x = 0, y = 40;
-	audioOutDevices.reserve(countOutDevices);
-	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
-	{
-		audioOutDevices.push_back(UIAudioOutDevice(hWnd, hInst, x, y));
-		audioOutDevices.back().SetDevice(i, deviceOutCollection);
-	}
-	RECT rect{0, 0, x + 20, audioOutDevices.back().GetRect().bottom + 70};
-	MoveWindow(hWnd, rect.left, rect.top, rect.right, rect.bottom, true);
-	CenterWindow(hWnd);
-
-	RECT rcClient;
-	GetClientRect(hWnd, &rcClient);
 	hTabControl = CreateWindow(
-		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
-		5,
-		5,
-		rcClient.right - 10,
-		audioOutDevices.back().GetRect().bottom,
+		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, 0, 0,
 		hWnd, NULL, hInst, NULL);
-	TCITEM tie[2];
+
+	TCITEM tie[2]{};
 	tie[0].mask = TCIF_TEXT;
 	tie[0].pszText = const_cast<LPWSTR>(L"Output");
 	TabCtrl_InsertItem(hTabControl, 0, &tie[0]);
 	tie[1].mask = TCIF_TEXT;
 	tie[1].pszText = const_cast<LPWSTR>(L"Input");
 	TabCtrl_InsertItem(hTabControl, 1, &tie[1]);
+
+	hOutputs = CreateWindow(
+		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER,
+		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
+
+	ULONG x = 0, y = 0;
+	audioOutDevices.reserve(countOutDevices);
+	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
+	{
+		audioOutDevices.push_back(UIAudioOutDevice(hOutputs, hInst, x-15, y));
+		audioOutDevices.back().SetDevice(i, deviceOutCollection);
+	}
+
+	ULONG right = audioOutDevices.back().GetRect().right;
+	ULONG bottom = audioOutDevices.back().GetRect().bottom;
+	MoveWindow(hTabControl, 5, 5, right + 15, bottom + 30, true);
+	RECT rectTC{};
+	GetClientRect(hTabControl, &rectTC);
+	MoveWindow(hOutputs, 10, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
+
+	MoveWindow(hWnd, 0, 0, rectTC.right + 27, rectTC.bottom + 68, true);
+	CenterWindow(hWnd);
 
 	return TRUE;
 }
@@ -190,6 +196,25 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 	}
 }
 
+LRESULT MainWindow::OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr)
+{
+	if (pnmhdr->code == TCN_SELCHANGE)
+	{
+		int iPage = TabCtrl_GetCurSel(hTabControl);
+		if (iPage == 0)
+		{
+			ShowWindow(hOutputs, SW_SHOW);
+			ShowWindow(hInputs, SW_HIDE);
+		}
+		else
+		{
+			ShowWindow(hOutputs, SW_HIDE);
+			ShowWindow(hInputs, SW_SHOW);
+		}
+	}
+	return 0;
+}
+
 LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -200,6 +225,7 @@ LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hWnd, WM_PAINT, OnPaint);
 		HANDLE_MSG(hWnd, WM_SIZE, OnSize);
 		HANDLE_MSG(hWnd, WM_VSCROLL, OnVScroll);
+		HANDLE_MSG(hWnd, WM_NOTIFY, OnNotify);
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);

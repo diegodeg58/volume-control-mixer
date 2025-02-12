@@ -11,6 +11,7 @@ private:
 	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 	HWND hWnd;
 	HWND hTabControl;
+	HWND hOutputs, hInputs;
 
 	std::vector<UIAudioOutDevice> audioOutDevices;
 	UINT countOutDevices;
@@ -28,6 +29,7 @@ private:
 	void OnPaint(HWND hwnd) const;
 	void OnSize(HWND hwnd, UINT state, int cx, int cy) const;
 	void OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos);
+	LRESULT OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr);
 
 public:
 	MainWindow(HINSTANCE hInstance);
