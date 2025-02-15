@@ -16,6 +16,21 @@ void CenterWindow(HWND hwnd)
 	SetWindowPos(hwnd, 0, (screenWidth - width) / 2, (screenHeight - height) / 2, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 }
 
+LRESULT CALLBACK ChildWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_VSCROLL:
+	{
+		HWND hParent = GetParent(GetParent(hwnd));
+		SendMessage(hParent, message, wParam, lParam);
+		return 0;
+	}
+	default:
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+}
+
 MainWindow::MainWindow(HINSTANCE hInstance)
 {
 	hInst = hInstance;
@@ -125,12 +140,13 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	hOutputs = CreateWindow(
 		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER,
 		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
+	SetWindowLongPtr(hOutputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
 
 	ULONG x = 0, y = 0;
 	audioOutDevices.reserve(countOutDevices);
 	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
 	{
-		audioOutDevices.push_back(UIAudioOutDevice(hOutputs, hInst, x-15, y));
+		audioOutDevices.push_back(UIAudioOutDevice(hOutputs, hInst, x - 15, y));
 		audioOutDevices.back().SetDevice(i, deviceOutCollection);
 	}
 
