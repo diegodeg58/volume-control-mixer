@@ -1,5 +1,5 @@
 #pragma once
-#include "AudioDevice.h"
+#include "UIAudioDevice.h"
 #include <vector>
 constexpr auto MAX_LOADSTRING = 100;
 
@@ -13,9 +13,12 @@ private:
 	HWND hTabControl;
 	HWND hOutputs, hInputs;
 
-	std::vector<UIAudioOutDevice> audioOutDevices;
+	std::vector<UIAudioDevice> audioOutDevices;
+	std::vector<UIAudioDevice> audioInDevices;
 	UINT countOutDevices;
 	UINT countInDevices;
+	IMMDeviceCollection *deviceOutCollection = NULL;
+	IMMDeviceCollection *deviceInCollection = NULL;
 
 	ATOM MyRegisterClass() const;
 
@@ -29,7 +32,7 @@ private:
 	void OnPaint(HWND hwnd) const;
 	void OnSize(HWND hwnd, UINT state, int cx, int cy) const;
 	void OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos);
-	LRESULT OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr);
+	LRESULT OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr) const;
 
 public:
 	MainWindow(HINSTANCE hInstance);

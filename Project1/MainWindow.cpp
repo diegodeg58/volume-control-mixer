@@ -4,8 +4,9 @@
 #include <windowsx.h>
 #include <commctrl.h>
 #include "Utilities.h"
+#include "AudioDevice.h"
 
-void CenterWindow(HWND hwnd)
+static void CenterWindow(HWND hwnd)
 {
 	RECT rc;
 	GetWindowRect(hwnd, &rc);
@@ -16,7 +17,7 @@ void CenterWindow(HWND hwnd)
 	SetWindowPos(hwnd, 0, (screenWidth - width) / 2, (screenHeight - height) / 2, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 }
 
-LRESULT CALLBACK ChildWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK ChildWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -37,9 +38,19 @@ MainWindow::MainWindow(HINSTANCE hInstance)
 	LoadStringW(hInst, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInst, IDC_PROJECT1, szWindowClass, MAX_LOADSTRING);
 	audioOutDevices = {};
+	audioInDevices = {};
 	countOutDevices = 0;
 	countInDevices = 0;
 	MyRegisterClass();
+
+	deviceOutCollection = NULL;
+	deviceInCollection = NULL;
+
+	HRESULT hr = CoInitialize(NULL);
+	hr = AudioDevice::GetAudioOutDevices(&deviceOutCollection);
+	hr = AudioDevice::GetAudioInDevices(&deviceInCollection);
+	countOutDevices = AudioDevice::GetDeviceCount(deviceOutCollection);
+	countInDevices = AudioDevice::GetDeviceCount(deviceInCollection);
 }
 
 HWND MainWindow::CreateMainWindow()
@@ -107,26 +118,8 @@ LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) 
 
 BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 {
-	HRESULT hr;
-	hr = CoInitialize(NULL);
-	IMMDeviceEnumerator *deviceEnumerator = NULL;
-	hr = CoCreateInstance(
-		__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER,
-		__uuidof(IMMDeviceEnumerator), (LPVOID *)&deviceEnumerator);
-
-	IMMDeviceCollection *deviceOutCollection = NULL;
-	IMMDeviceCollection *deviceInCollection = NULL;
-	hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &deviceOutCollection);
-	hr = deviceEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &deviceInCollection);
-
-	deviceEnumerator->Release();
-	deviceEnumerator = NULL;
-
-	hr = deviceOutCollection->GetCount(&countOutDevices);
-	hr = deviceInCollection->GetCount(&countInDevices);
-
 	hTabControl = CreateWindow(
-		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, 0, 0,
+		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0,
 		hWnd, NULL, hInst, NULL);
 
 	TCITEM tie[2]{};
@@ -141,23 +134,35 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER,
 		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
 	SetWindowLongPtr(hOutputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
+	hInputs = CreateWindow(
+		L"Static", NULL, WS_CHILD | SS_CENTER,
+		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
+	SetWindowLongPtr(hInputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
 
 	ULONG x = 0, y = 0;
 	audioOutDevices.reserve(countOutDevices);
 	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
 	{
-		audioOutDevices.push_back(UIAudioOutDevice(hOutputs, hInst, x - 15, y));
+		audioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 15, y));
 		audioOutDevices.back().SetDevice(i, deviceOutCollection);
 	}
 
 	ULONG right = audioOutDevices.back().GetRect().right;
 	ULONG bottom = audioOutDevices.back().GetRect().bottom;
-	MoveWindow(hTabControl, 5, 5, right + 15, bottom + 30, true);
+	MoveWindow(hTabControl, 0, 0, right + 20, bottom + 30, true);
 	RECT rectTC{};
 	GetClientRect(hTabControl, &rectTC);
 	MoveWindow(hOutputs, 10, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
+	MoveWindow(hWnd, 0, 0, rectTC.right + 13, rectTC.bottom + 55, true);
 
-	MoveWindow(hWnd, 0, 0, rectTC.right + 27, rectTC.bottom + 68, true);
+	audioInDevices.reserve(countInDevices);
+	for (ULONG i = 0; i < countInDevices; i++, x = i * 110)
+	{
+		audioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 15, y));
+		audioInDevices.back().SetDevice(i, deviceInCollection);
+	}
+	MoveWindow(hInputs, -50, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
+	
 	CenterWindow(hWnd);
 
 	return TRUE;
@@ -192,13 +197,9 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 {
 	int value;
 	if (code == TB_THUMBPOSITION || code == TB_THUMBTRACK)
-	{
 		value = (int)MAX_VOL - pos;
-	}
 	else
-	{
 		value = MAX_VOL - (int)SendMessage(hwndCtl, TBM_GETPOS, NULL, NULL);
-	}
 	char text[5];
 	sprintf_s(text, "%d", value);
 
@@ -212,7 +213,7 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 	}
 }
 
-LRESULT MainWindow::OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr)
+LRESULT MainWindow::OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr) const
 {
 	if (pnmhdr->code == TCN_SELCHANGE)
 	{

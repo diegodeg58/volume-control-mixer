@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="About.h" />
     <ClInclude Include="AudioDevice.h" />
+    <ClInclude Include="UIAudioDevice.h" />
     <ClInclude Include="CAudioEndpointVolumeCallback.h" />
     <ClInclude Include="CBaseDialog.h" />
     <ClInclude Include="CDialogSingleton.h" />
@@ -143,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="About.cpp" />
     <ClCompile Include="AudioDevice.cpp" />
+    <ClCompile Include="UIAudioDevice.cpp" />
     <ClCompile Include="CAudioEndpointVolumeCallback.cpp" />
     <ClCompile Include="CBaseDialog.cpp" />
     <ClCompile Include="CDialogSingleton.cpp" />
