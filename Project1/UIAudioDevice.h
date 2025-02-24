@@ -1,24 +1,21 @@
 #pragma once
-#include <mmdeviceapi.h>
-#include <endpointvolume.h>
-#include "CAudioEndpointVolumeCallback.h"
+#include "AudioDevice.h"
+#include "Subscriber.h"
 
-class UIAudioDevice
+class UIAudioDevice : public Subscriber
 {
 protected:
 	HWND levelFader;
 	HWND levelValue;
 	HWND deviceName;
-	IMMDevice* iEndpoint;
-	IAudioEndpointVolume* iEndpointVolume;
-	CAudioEndpointVolumeCallback iAudioEndpointVolumeCallback;
+	AudioDevice* audioDevice;
 
 public:
 	UIAudioDevice(HWND hParent, HINSTANCE hInst, int xCoord, int yCoord);
-	void SetDevice(UINT nDevice, IMMDeviceCollection* deviceOutCollection);
 	void SetVolumeScalar(float volume);
-	HWND GetLevelFader() const;
-	void Release();
+	HWND GetFaderHandle() const;
 	RECT GetRect() const;
+	void InitUI(AudioDevice* audioDevice);
+	void Update(UINT value);
+	void Release();
 };
-

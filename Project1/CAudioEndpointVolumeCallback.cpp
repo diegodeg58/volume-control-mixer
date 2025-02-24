@@ -1,19 +1,13 @@
 #include "CAudioEndpointVolumeCallback.h"
 
 CAudioEndpointVolumeCallback::CAudioEndpointVolumeCallback() :
-	_cRef(1), hWndFader(NULL), hWndTextFader(NULL)
+	_cRef(1)
 {
 };
 
 CAudioEndpointVolumeCallback::~CAudioEndpointVolumeCallback()
 {
 	// delete this;
-}
-
-void CAudioEndpointVolumeCallback::SetHandlers(HWND hWndFader, HWND hWndTextFader)
-{
-	this->hWndFader = hWndFader;
-	this->hWndTextFader = hWndTextFader;
 }
 
 // IUnknown methods -- AddRef, Release, and QueryInterface
@@ -53,19 +47,18 @@ HRESULT CAudioEndpointVolumeCallback::QueryInterface(REFIID riid, VOID** ppvInte
 	return S_OK;
 }
 
+void CAudioEndpointVolumeCallback::Susbcribe(Subscriber* subscriber)
+{
+	this->subscriber = subscriber;
+}
+
 // Callback method for endpoint-volume-change notifications.
 HRESULT CAudioEndpointVolumeCallback::OnNotify(PAUDIO_VOLUME_NOTIFICATION_DATA pNotify)
 {
 	if (pNotify == NULL)
-	{
 		return E_INVALIDARG;
-	}
 
 	float currentVolume = pNotify->fMasterVolume;
-	char text[4];
-	sprintf_s(text, "%d", (int)(currentVolume * MAX_VOL));
-	PostMessageA(hWndFader, TBM_SETPOS, TRUE, LPARAM((UINT32)(MAX_VOL - currentVolume * MAX_VOL)));
-	SetWindowTextA(hWndTextFader, (LPCSTR)text);
-
+	subscriber->Update((UINT)(currentVolume * MAX_VOL));
 	return S_OK;
 }

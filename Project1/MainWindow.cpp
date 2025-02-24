@@ -144,7 +144,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
 	{
 		audioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 15, y));
-		audioOutDevices.back().SetDevice(i, deviceOutCollection);
+		audioOutDevices.back().InitUI(new AudioOutDevice(i, deviceOutCollection));
 	}
 
 	ULONG right = audioOutDevices.back().GetRect().right;
@@ -159,7 +159,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	for (ULONG i = 0; i < countInDevices; i++, x = i * 110)
 	{
 		audioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 15, y));
-		audioInDevices.back().SetDevice(i, deviceInCollection);
+		audioInDevices.back().InitUI(new AudioInDevice(i, deviceInCollection));
 	}
 	MoveWindow(hInputs, -50, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
 	
@@ -205,7 +205,7 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 
 	for (unsigned int i = 0; i < countOutDevices; i++)
 	{
-		if (hwndCtl == audioOutDevices[i].GetLevelFader())
+		if (hwndCtl == audioOutDevices[i].GetFaderHandle())
 		{
 			float newValue = (float)(value) / MAX_VOL;
 			audioOutDevices[i].SetVolumeScalar(newValue);

@@ -1,7 +1,6 @@
 #pragma once
 #include <endpointvolume.h>
-#include <stdio.h>
-#include <CommCtrl.h>
+#include "Subscriber.h"
 constexpr auto MAX_VOL = 100;
 //-----------------------------------------------------------
 // Client implementation of IAudioEndpointVolumeCallback
@@ -13,20 +12,16 @@ constexpr auto MAX_VOL = 100;
 class CAudioEndpointVolumeCallback : public IAudioEndpointVolumeCallback
 {
     LONG _cRef;
-    HWND hWndFader;
-    HWND hWndTextFader;
+    Subscriber* subscriber = nullptr;
 
 public:
     CAudioEndpointVolumeCallback();
     ~CAudioEndpointVolumeCallback();
-
-    void SetHandlers(HWND hWndFader, HWND hWndTextFader);
+    void Susbcribe(Subscriber* subscriber);
 
     // IUnknown methods -- AddRef, Release, and QueryInterface
     ULONG STDMETHODCALLTYPE AddRef();
-
     ULONG STDMETHODCALLTYPE Release();
-
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID** ppvInterface);
 
     // Callback method for endpoint-volume-change notifications.
