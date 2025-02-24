@@ -119,7 +119,7 @@ LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) 
 BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 {
 	hTabControl = CreateWindow(
-		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0,
+		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE , 0, 0, 0, 0,
 		hWnd, NULL, hInst, NULL);
 
 	TCITEM tie[2]{};
@@ -131,7 +131,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	TabCtrl_InsertItem(hTabControl, 1, &tie[1]);
 
 	hOutputs = CreateWindow(
-		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER,
+		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER ,
 		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
 	SetWindowLongPtr(hOutputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
 	hInputs = CreateWindow(
@@ -149,20 +149,20 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 
 	ULONG right = UIAudioOutDevices.back().GetRect().right;
 	ULONG bottom = UIAudioOutDevices.back().GetRect().bottom;
-	MoveWindow(hTabControl, 0, 0, right + 20, bottom + 30, true);
+	MoveWindow(hTabControl, 0, 0, right + 20, bottom + 35, true);
 	RECT rectTC{};
 	GetClientRect(hTabControl, &rectTC);
-	MoveWindow(hOutputs, 10, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
-	MoveWindow(hWnd, 0, 0, rectTC.right + 13, rectTC.bottom + 55, true);
+	MoveWindow(hOutputs, 5, rectTC.top + 27, rectTC.right - rectTC.left - 15, rectTC.bottom - 15, true);
 
 	UIAudioInDevices.reserve(countInDevices);
 	for (ULONG i = 0; i < countInDevices; i++, x = i * 110)
 	{
-		UIAudioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 15, y));
+		UIAudioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 120, y + 0));
 		UIAudioInDevices.back().InitUI(new AudioDevice(i, deviceInCollection));
 	}
-	MoveWindow(hInputs, -50, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
+	MoveWindow(hInputs, 0, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
 	
+	MoveWindow(hWnd, 0, 0, rectTC.right + 10, rectTC.bottom + 50, true);
 	CenterWindow(hWnd);
 
 	return TRUE;
