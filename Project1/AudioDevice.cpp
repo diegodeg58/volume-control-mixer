@@ -83,13 +83,3 @@ AudioDevice::AudioDevice(UINT nDevice, IMMDeviceCollection* deviceCollection)
     audioEndpointVolumeCallback.AddRef();
     iEndpointVolume->RegisterControlChangeNotify(&audioEndpointVolumeCallback);
 }
-
-AudioOutDevice::AudioOutDevice(UINT nDevice, IMMDeviceCollection* deviceCollection) :
-    AudioDevice(nDevice, deviceCollection)
-{
-}
-
-AudioInDevice::AudioInDevice(UINT nDevice, IMMDeviceCollection* deviceCollection) :
-    AudioDevice(nDevice, deviceCollection)
-{
-}

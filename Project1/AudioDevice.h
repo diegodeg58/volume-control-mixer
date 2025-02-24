@@ -1,6 +1,5 @@
 #pragma once
 #include <mmdeviceapi.h>
-#include <endpointvolume.h>
 #include "CAudioEndpointVolumeCallback.h"
 #include <string>
 #include "Subscriber.h"
@@ -28,16 +27,4 @@ protected:
 
 private:
     static HRESULT GetAudioDevices(IMMDeviceCollection **deviceCollection, EDataFlow dataFlow);
-};
-
-class AudioOutDevice : public AudioDevice
-{
-public:
-    AudioOutDevice(UINT nDevice, IMMDeviceCollection *deviceCollection);
-};
-
-class AudioInDevice : public AudioDevice
-{
-public:
-    AudioInDevice(UINT nDevice, IMMDeviceCollection *deviceCollection);
 };

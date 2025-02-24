@@ -13,8 +13,8 @@ private:
 	HWND hTabControl;
 	HWND hOutputs, hInputs;
 
-	std::vector<UIAudioDevice> audioOutDevices;
-	std::vector<UIAudioDevice> audioInDevices;
+	std::vector<UIAudioDevice> UIAudioOutDevices;
+	std::vector<UIAudioDevice> UIAudioInDevices;
 	UINT countOutDevices;
 	UINT countInDevices;
 	IMMDeviceCollection *deviceOutCollection = NULL;

@@ -37,8 +37,8 @@ MainWindow::MainWindow(HINSTANCE hInstance)
 	hInst = hInstance;
 	LoadStringW(hInst, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInst, IDC_PROJECT1, szWindowClass, MAX_LOADSTRING);
-	audioOutDevices = {};
-	audioInDevices = {};
+	UIAudioOutDevices = {};
+	UIAudioInDevices = {};
 	countOutDevices = 0;
 	countInDevices = 0;
 	MyRegisterClass();
@@ -140,26 +140,26 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	SetWindowLongPtr(hInputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
 
 	ULONG x = 0, y = 0;
-	audioOutDevices.reserve(countOutDevices);
+	UIAudioOutDevices.reserve(countOutDevices);
 	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
 	{
-		audioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 15, y));
-		audioOutDevices.back().InitUI(new AudioOutDevice(i, deviceOutCollection));
+		UIAudioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 15, y));
+		UIAudioOutDevices.back().InitUI(new AudioDevice(i, deviceOutCollection));
 	}
 
-	ULONG right = audioOutDevices.back().GetRect().right;
-	ULONG bottom = audioOutDevices.back().GetRect().bottom;
+	ULONG right = UIAudioOutDevices.back().GetRect().right;
+	ULONG bottom = UIAudioOutDevices.back().GetRect().bottom;
 	MoveWindow(hTabControl, 0, 0, right + 20, bottom + 30, true);
 	RECT rectTC{};
 	GetClientRect(hTabControl, &rectTC);
 	MoveWindow(hOutputs, 10, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
 	MoveWindow(hWnd, 0, 0, rectTC.right + 13, rectTC.bottom + 55, true);
 
-	audioInDevices.reserve(countInDevices);
+	UIAudioInDevices.reserve(countInDevices);
 	for (ULONG i = 0; i < countInDevices; i++, x = i * 110)
 	{
-		audioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 15, y));
-		audioInDevices.back().InitUI(new AudioInDevice(i, deviceInCollection));
+		UIAudioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 15, y));
+		UIAudioInDevices.back().InitUI(new AudioDevice(i, deviceInCollection));
 	}
 	MoveWindow(hInputs, -50, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
 	
@@ -174,7 +174,11 @@ void MainWindow::OnDestroy(HWND hwnd)
 	// release all devices
 	for (unsigned int i = 0; i < countOutDevices; i++)
 	{
-		audioOutDevices[i].Release();
+		UIAudioOutDevices[i].Release();
+	}
+	for (unsigned int i = 0; i < countInDevices; i++)
+	{
+		UIAudioInDevices[i].Release();
 	}
 	PostQuitMessage(0);
 }
@@ -205,10 +209,20 @@ void MainWindow::OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
 
 	for (unsigned int i = 0; i < countOutDevices; i++)
 	{
-		if (hwndCtl == audioOutDevices[i].GetFaderHandle())
+		if (hwndCtl == UIAudioOutDevices[i].GetFaderHandle())
 		{
 			float newValue = (float)(value) / MAX_VOL;
-			audioOutDevices[i].SetVolumeScalar(newValue);
+			UIAudioOutDevices[i].SetVolumeScalar(newValue);
+			return;
+		}
+	}
+	for (unsigned int i = 0; i < countInDevices; i++)
+	{
+		if (hwndCtl == UIAudioInDevices[i].GetFaderHandle())
+		{
+			float newValue = (float)(value) / MAX_VOL;
+			UIAudioInDevices[i].SetVolumeScalar(newValue);
+			return;
 		}
 	}
 }
