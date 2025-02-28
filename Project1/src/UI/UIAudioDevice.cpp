@@ -54,9 +54,9 @@ RECT UIAudioDevice::GetRect() const
 	return RECT{0, 0, rect.right, rect.bottom};
 }
 
-void UIAudioDevice::InitUI(AudioDevice* audioDevice)
+void UIAudioDevice::InitUI(UINT nDevice, IMMDeviceCollection *deviceCollection)
 {
-	this->audioDevice = audioDevice;
+	this->audioDevice = new AudioDevice(nDevice, deviceCollection);
 	audioDevice->Subscribe(this);
 
 	float currentVolumeScalar = audioDevice->GetVolumeScalar();

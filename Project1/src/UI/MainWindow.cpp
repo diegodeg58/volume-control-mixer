@@ -137,7 +137,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	for (ULONG i = 0, x = 0; i < countOutDevices; i++, x = i * 110)
 	{
 		UIAudioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 13, y));
-		UIAudioOutDevices.back().InitUI(new AudioDevice(i, deviceOutCollection));
+		UIAudioOutDevices.back().InitUI(i, deviceOutCollection);
 	}
 
 	ULONG right = UIAudioOutDevices.back().GetRect().right;
@@ -151,7 +151,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	for (ULONG i = 0, x = 0; i < countInDevices; i++, x = i * 110)
 	{
 		UIAudioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 13, y + 0));
-		UIAudioInDevices.back().InitUI(new AudioDevice(i, deviceInCollection));
+		UIAudioInDevices.back().InitUI(i, deviceInCollection);
 	}
 	MoveWindow(hInputs, 5, rectTC.top + 27, rectTC.right - rectTC.left - 15, rectTC.bottom - 15, true);
 	

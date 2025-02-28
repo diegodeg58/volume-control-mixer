@@ -15,7 +15,7 @@ public:
 	void SetVolumeScalar(float volume);
 	HWND GetFaderHandle() const;
 	RECT GetRect() const;
-	void InitUI(AudioDevice* audioDevice);
+	void InitUI(UINT nDevice, IMMDeviceCollection *deviceCollection);
 	void Update(UINT value);
 	void Release();
 };
