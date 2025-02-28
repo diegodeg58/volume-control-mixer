@@ -13,15 +13,13 @@ private:
 	HWND hTabControl;
 	HWND hOutputs, hInputs;
 
-	std::vector<UIAudioDevice> UIAudioOutDevices;
-	std::vector<UIAudioDevice> UIAudioInDevices;
-	UINT countOutDevices;
-	UINT countInDevices;
-	IMMDeviceCollection *deviceOutCollection = NULL;
-	IMMDeviceCollection *deviceInCollection = NULL;
+	std::vector<UIAudioDevice> UIAudioOutDevices, UIAudioInDevices;
+	UINT countOutDevices, countInDevices;
+	IMMDeviceCollection *deviceOutCollection{NULL}, *deviceInCollection{NULL};
 
 	ATOM MyRegisterClass() const;
 
+	//Procedures
 	static LRESULT CALLBACK sWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -33,6 +31,10 @@ private:
 	void OnSize(HWND hwnd, UINT state, int cx, int cy) const;
 	void OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos);
 	LRESULT OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr) const;
+	void OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags);
+
+	//Other methods
+	void CreateTabControl();
 
 public:
 	MainWindow(HINSTANCE hInstance);

@@ -32,6 +32,19 @@ static LRESULT CALLBACK ChildWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 	}
 }
 
+void PaintHwnd(HWND hwnd)
+{
+	HWND hwndPaint = hwnd;
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(hwndPaint, &ps);
+	// TODO: Add any drawing code that uses hdc here...
+	HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 255));
+	FillRect(hdc, &ps.rcPaint, hBrush);
+	DeleteObject(hBrush);
+	SetBkColor(hdc, RGB(255, 255, 255));
+	EndPaint(hwndPaint, &ps);
+}
+
 MainWindow::MainWindow(HINSTANCE hInstance)
 {
 	hInst = hInstance;
@@ -118,30 +131,10 @@ LRESULT MainWindow::OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify) 
 
 BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 {
-	hTabControl = CreateWindow(
-		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE , 0, 0, 0, 0,
-		hWnd, NULL, hInst, NULL);
-
-	TCITEM tie[2]{};
-	tie[0].mask = TCIF_TEXT;
-	tie[0].pszText = const_cast<LPWSTR>(L"Output");
-	TabCtrl_InsertItem(hTabControl, 0, &tie[0]);
-	tie[1].mask = TCIF_TEXT;
-	tie[1].pszText = const_cast<LPWSTR>(L"Input");
-	TabCtrl_InsertItem(hTabControl, 1, &tie[1]);
-
-	hOutputs = CreateWindow(
-		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER ,
-		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
-	SetWindowLongPtr(hOutputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
-	hInputs = CreateWindow(
-		L"Static", NULL, WS_CHILD | SS_CENTER,
-		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
-	SetWindowLongPtr(hInputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
-
-	ULONG x = 0, y = 0;
+	CreateTabControl();
+	ULONG y = 0;
 	UIAudioOutDevices.reserve(countOutDevices);
-	for (ULONG i = 0; i < countOutDevices; i++, x = i * 110)
+	for (ULONG i = 0, x = 0; i < countOutDevices; i++, x = i * 110)
 	{
 		UIAudioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 15, y));
 		UIAudioOutDevices.back().InitUI(new AudioDevice(i, deviceOutCollection));
@@ -155,7 +148,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	MoveWindow(hOutputs, 5, rectTC.top + 27, rectTC.right - rectTC.left - 15, rectTC.bottom - 15, true);
 
 	UIAudioInDevices.reserve(countInDevices);
-	for (ULONG i = 0; i < countInDevices; i++, x = i * 110)
+	for (ULONG i = 0, x = 0; i < countInDevices; i++, x = i * 110)
 	{
 		UIAudioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 120, y + 0));
 		UIAudioInDevices.back().InitUI(new AudioDevice(i, deviceInCollection));
@@ -185,10 +178,6 @@ void MainWindow::OnDestroy(HWND hwnd)
 
 void MainWindow::OnPaint(HWND hwnd) const
 {
-	PAINTSTRUCT ps;
-	HDC hdc = BeginPaint(hWnd, &ps);
-	// TODO: Add any drawing code that uses hdc here...
-	EndPaint(hWnd, &ps);
 }
 
 void MainWindow::OnSize(HWND hwnd, UINT state, int cx, int cy) const
@@ -246,6 +235,34 @@ LRESULT MainWindow::OnNotify(HWND hwnd, int id, LPNMHDR pnmhdr) const
 	return 0;
 }
 
+void MainWindow::CreateTabControl()
+{
+	hTabControl = CreateWindow(
+		WC_TABCONTROL, L"", WS_CHILD | WS_VISIBLE , 0, 0, 0, 0,
+		hWnd, NULL, hInst, NULL);
+
+	TCITEM tie[2]{};
+	tie[0].mask = TCIF_TEXT;
+	tie[0].pszText = const_cast<LPWSTR>(L"Output");
+	TabCtrl_InsertItem(hTabControl, 0, &tie[0]);
+	tie[1].mask = TCIF_TEXT;
+	tie[1].pszText = const_cast<LPWSTR>(L"Input");
+	TabCtrl_InsertItem(hTabControl, 1, &tie[1]);
+
+	hOutputs = CreateWindow(
+		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER ,
+		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
+	SetWindowLongPtr(hOutputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
+	hInputs = CreateWindow(
+		L"Static", NULL, WS_CHILD | SS_CENTER,
+		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
+	SetWindowLongPtr(hInputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
+}
+
+void MainWindow::OnMButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
+{
+}
+
 LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -257,6 +274,7 @@ LRESULT MainWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hWnd, WM_SIZE, OnSize);
 		HANDLE_MSG(hWnd, WM_VSCROLL, OnVScroll);
 		HANDLE_MSG(hWnd, WM_NOTIFY, OnNotify);
+		HANDLE_MSG(hWnd, WM_MBUTTONDOWN, OnMButtonDown);
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
