@@ -1,6 +1,6 @@
 #pragma once
-#include "AudioDevice.h"
-#include "Subscriber.h"
+#include "../AudioDevice.h"
+#include "../Subscriber.h"
 
 class UIAudioDevice : public Subscriber
 {

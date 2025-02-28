@@ -36,7 +36,7 @@
     <ClInclude Include="AudioDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIAudioDevice.h">
+    <ClInclude Include="UI\UIAudioDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="About.h">
@@ -49,6 +49,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Subscriber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,7 +68,7 @@
     <ClCompile Include="AudioDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UIAudioDevice.cpp">
+    <ClCompile Include="UI\UIAudioDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="About.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Subscriber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

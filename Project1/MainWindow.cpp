@@ -136,7 +136,7 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	UIAudioOutDevices.reserve(countOutDevices);
 	for (ULONG i = 0, x = 0; i < countOutDevices; i++, x = i * 110)
 	{
-		UIAudioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 15, y));
+		UIAudioOutDevices.push_back(UIAudioDevice(hOutputs, hInst, x - 13, y));
 		UIAudioOutDevices.back().InitUI(new AudioDevice(i, deviceOutCollection));
 	}
 
@@ -150,10 +150,10 @@ BOOL MainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 	UIAudioInDevices.reserve(countInDevices);
 	for (ULONG i = 0, x = 0; i < countInDevices; i++, x = i * 110)
 	{
-		UIAudioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 120, y + 0));
+		UIAudioInDevices.push_back(UIAudioDevice(hInputs, hInst, x - 13, y + 0));
 		UIAudioInDevices.back().InitUI(new AudioDevice(i, deviceInCollection));
 	}
-	MoveWindow(hInputs, 0, rectTC.top + 27, rectTC.right - rectTC.left - 17, rectTC.bottom - 33, true);
+	MoveWindow(hInputs, 5, rectTC.top + 27, rectTC.right - rectTC.left - 15, rectTC.bottom - 15, true);
 	
 	MoveWindow(hWnd, 0, 0, rectTC.right + 10, rectTC.bottom + 50, true);
 	CenterWindow(hWnd);
@@ -250,11 +250,11 @@ void MainWindow::CreateTabControl()
 	TabCtrl_InsertItem(hTabControl, 1, &tie[1]);
 
 	hOutputs = CreateWindow(
-		L"Static", NULL, WS_CHILD | WS_VISIBLE | SS_CENTER ,
+		L"Static", NULL, WS_CHILD | WS_VISIBLE ,
 		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
 	SetWindowLongPtr(hOutputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
 	hInputs = CreateWindow(
-		L"Static", NULL, WS_CHILD | SS_CENTER,
+		L"Static", NULL, WS_CHILD,
 		0, 0, 0, 0, hTabControl, NULL, hInst, NULL);
 	SetWindowLongPtr(hInputs, GWLP_WNDPROC, (LONG_PTR)ChildWndProc);
 }

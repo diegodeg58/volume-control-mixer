@@ -131,7 +131,7 @@
     <ClInclude Include="About.h" />
     <ClInclude Include="AudioDevice.h" />
     <ClInclude Include="Subscriber.h" />
-    <ClInclude Include="UIAudioDevice.h" />
+    <ClInclude Include="UI\UIAudioDevice.h" />
     <ClInclude Include="CAudioEndpointVolumeCallback.h" />
     <ClInclude Include="CBaseDialog.h" />
     <ClInclude Include="CDialogSingleton.h" />
@@ -146,7 +146,7 @@
     <ClCompile Include="About.cpp" />
     <ClCompile Include="AudioDevice.cpp" />
     <ClCompile Include="Subscriber.cpp" />
-    <ClCompile Include="UIAudioDevice.cpp" />
+    <ClCompile Include="UI\UIAudioDevice.cpp" />
     <ClCompile Include="CAudioEndpointVolumeCallback.cpp" />
     <ClCompile Include="CBaseDialog.cpp" />
     <ClCompile Include="CDialogSingleton.cpp" />
