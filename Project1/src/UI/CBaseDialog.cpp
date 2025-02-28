@@ -1,5 +1,5 @@
 #include "CBaseDialog.h"
-#include "resource.h"
+#include "../../resource.h"
 
 void CBaseDialog::Show()
 {

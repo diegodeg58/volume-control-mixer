@@ -1,5 +1,5 @@
 #include "CDialogSingleton.h"
-#include "resource.h"
+#include "../../resource.h"
 #include "About.h"
 
 // Explicit instantiation of the template for AboutWnd

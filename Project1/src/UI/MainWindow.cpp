@@ -1,10 +1,10 @@
 #include "MainWindow.h"
 #include "About.h"
-#include "resource.h"
+#include "../../resource.h"
 #include <windowsx.h>
 #include <commctrl.h>
-#include "Utilities.h"
-#include "AudioDevice.h"
+#include "../Utilities.h"
+#include "../AudioDevice.h"
 
 static void CenterWindow(HWND hwnd)
 {
