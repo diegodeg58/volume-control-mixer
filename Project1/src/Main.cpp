@@ -1,6 +1,6 @@
 #pragma comment(lib, "comctl32.lib")
 
-#include "framework.h"
+#include "../framework.h"
 #include "Main.h"
 #include <commctrl.h>
 #include <stdio.h>
@@ -8,7 +8,7 @@
 #include <endpointvolume.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include "CAudioEndpointVolumeCallback.h"
-#include "MainWindow.h"
+#include "UI/MainWindow.h"
 
 BOOL InitInstance(int nCmdShow, MainWindow* mainWindow);
 

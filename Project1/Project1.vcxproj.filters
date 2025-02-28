@@ -15,75 +15,75 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
+    <ClInclude Include="src\framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
+    <ClInclude Include="src\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Main.h">
+    <ClInclude Include="src\Main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MainWindow.h">
+    <ClInclude Include="src\UI\MainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CAudioEndpointVolumeCallback.h">
+    <ClInclude Include="src\CAudioEndpointVolumeCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioDevice.h">
+    <ClInclude Include="src\AudioDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UI\UIAudioDevice.h">
+    <ClInclude Include="src\UI\UIAudioDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="About.h">
+    <ClInclude Include="src\About.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CBaseDialog.h">
+    <ClInclude Include="src\UI\CBaseDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CDialogSingleton.h">
+    <ClInclude Include="src\UI\CDialogSingleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities.h">
+    <ClInclude Include="src\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Subscriber.h">
+    <ClInclude Include="src\Subscriber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainWindow.cpp">
+    <ClCompile Include="src\UI\MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CAudioEndpointVolumeCallback.cpp">
+    <ClCompile Include="src\CAudioEndpointVolumeCallback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AudioDevice.cpp">
+    <ClCompile Include="src\AudioDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UI\UIAudioDevice.cpp">
+    <ClCompile Include="src\UI\UIAudioDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="About.cpp">
+    <ClCompile Include="src\About.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CBaseDialog.cpp">
+    <ClCompile Include="src\UI\CBaseDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CDialogSingleton.cpp">
+    <ClCompile Include="src\UI\CDialogSingleton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities.cpp">
+    <ClCompile Include="src\Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Subscriber.cpp">
+    <ClCompile Include="src\Subscriber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

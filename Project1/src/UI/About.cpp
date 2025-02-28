@@ -1,5 +1,5 @@
 #include "About.h"
-#include "resource.h"
+#include "../../resource.h"
 #include "windowsx.h"
 
 INT_PTR AboutWnd::Procedure(UINT message, WPARAM wParam, LPARAM lParam)

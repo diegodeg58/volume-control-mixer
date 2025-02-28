@@ -128,31 +128,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="About.h" />
-    <ClInclude Include="AudioDevice.h" />
-    <ClInclude Include="Subscriber.h" />
-    <ClInclude Include="UI\UIAudioDevice.h" />
-    <ClInclude Include="CAudioEndpointVolumeCallback.h" />
-    <ClInclude Include="CBaseDialog.h" />
-    <ClInclude Include="CDialogSingleton.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="Main.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="src\UI\About.h" />
+    <ClInclude Include="src\AudioDevice.h" />
+    <ClInclude Include="src\Subscriber.h" />
+    <ClInclude Include="src\UI\UIAudioDevice.h" />
+    <ClInclude Include="src\CAudioEndpointVolumeCallback.h" />
+    <ClInclude Include="src\UI\CBaseDialog.h" />
+    <ClInclude Include="src\UI\CDialogSingleton.h" />
+    <ClInclude Include="src\framework.h" />
+    <ClInclude Include="src\UI\MainWindow.h" />
+    <ClInclude Include="src\Main.h" />
+    <ClInclude Include="src\Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Utilities.h" />
+    <ClInclude Include="src\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="About.cpp" />
-    <ClCompile Include="AudioDevice.cpp" />
-    <ClCompile Include="Subscriber.cpp" />
-    <ClCompile Include="UI\UIAudioDevice.cpp" />
-    <ClCompile Include="CAudioEndpointVolumeCallback.cpp" />
-    <ClCompile Include="CBaseDialog.cpp" />
-    <ClCompile Include="CDialogSingleton.cpp" />
-    <ClCompile Include="MainWindow.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="src\UI\About.cpp" />
+    <ClCompile Include="src\AudioDevice.cpp" />
+    <ClCompile Include="src\Subscriber.cpp" />
+    <ClCompile Include="src\UI\UIAudioDevice.cpp" />
+    <ClCompile Include="src\CAudioEndpointVolumeCallback.cpp" />
+    <ClCompile Include="src\UI\CBaseDialog.cpp" />
+    <ClCompile Include="src\UI\CDialogSingleton.cpp" />
+    <ClCompile Include="src\UI\MainWindow.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project1.rc" />
